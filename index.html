@@ -2,110 +2,201 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>EstiNcode</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1e40af">
+    <meta name="theme-color" content="#0f766e">
+    
+    <!-- خط Alexandria الفخم -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore-compat.js"></script>
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Alexandria', 'sans-serif'] },
+                    colors: { medical: { 50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 900: '#134e4a' } }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; background-color: #f8fafc; }
-        .tab-active { border-bottom: 3px solid #1e40af; color: #1e40af; font-weight: bold; }
+        body { background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        /* التأثير الزجاجي للشريط العلوي */
+        .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(20, 184, 166, 0.15); }
+        /* تصميم التبويبات الكبسولية */
+        .tab-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tab-active { background-color: #ffffff; color: #0f766e; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); font-weight: 700; }
         .hidden-section { display: none !important; }
-        .modal-enter { animation: modalFadeIn 0.3s ease-out forwards; }
-        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95) translateY(-10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        /* الأنيميشن */
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .progress-bar-fill { transition: width 0.4s ease-out; }
+        /* تصميم مخصص لشريط التمرير */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="text-slate-800 relative">
+<body class="text-slate-800 relative antialiased">
 
-    <nav class="bg-white shadow-sm mb-8 sticky top-0 z-40">
-        <div class="max-w-5xl mx-auto px-4">
-            <div class="flex flex-col sm:flex-row justify-between h-auto sm:h-16 items-center py-4 sm:py-0">
-                <h1 class="text-2xl font-bold text-blue-900 flex items-center gap-2 mb-4 sm:mb-0">
-                    <span>⚕️</span> EstiNcode System
-                </h1>
-                <div class="flex space-x-6 space-x-reverse text-lg">
-                    <button id="tab-search" class="px-2 py-2 tab-active transition" onclick="switchTab('search')">🔍 البحث المتقدم</button>
-                    <button id="tab-upload" class="px-2 py-2 text-slate-500 hover:text-blue-800 transition flex items-center gap-1" onclick="showAuthModal()">
-                        <span>🔒</span> إدارة البيانات
-                    </button>
+    <!-- الشريط العلوي الاحترافي -->
+    <nav class="glass-header sticky top-0 z-40 w-full">
+        <div class="max-w-4xl mx-auto px-5">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-3">
+                    <div class="bg-gradient-to-br from-medical-500 to-medical-700 p-2.5 rounded-2xl shadow-lg shadow-medical-500/30">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-slate-800 leading-tight">EstiNcode</h1>
+                        <p class="text-xs font-semibold text-medical-600">تقدير الاحتياج الدوائي</p>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-5xl mx-auto px-4 pb-12">
-        <section id="search-section" class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
-            <h2 class="text-2xl font-bold text-slate-800 mb-6">البحث في قاعدة البيانات السحابية</h2>
-            
-            <div class="flex flex-col md:flex-row gap-4 mb-8">
-                <select id="searchYear" class="p-4 border border-slate-300 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none md:w-1/4 text-lg font-semibold text-slate-700"></select>
-                <input type="text" id="searchInput" placeholder="اكتب اسم المادة أو الرمز الوطني للبحث..." class="p-4 border border-slate-300 rounded-xl w-full focus:ring-2 focus:ring-blue-500 outline-none text-lg" onkeypress="if(event.key === 'Enter') performSearch()">
-                <button onclick="performSearch()" class="bg-blue-800 hover:bg-blue-900 text-white px-8 py-4 rounded-xl font-bold text-lg transition shadow-md">بحث</button>
+    <!-- شريط التبويبات الكبسولي (للهواتف) -->
+    <div class="max-w-4xl mx-auto px-5 mt-6">
+        <div class="flex bg-slate-200/70 p-1.5 rounded-3xl w-full sm:w-96 mx-auto mb-8 relative">
+            <button id="tab-search" class="tab-btn flex-1 py-3 rounded-2xl text-sm tab-active flex items-center justify-center gap-2" onclick="switchTab('search')">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                البحث المتقدم
+            </button>
+            <button id="tab-upload" class="tab-btn flex-1 py-3 rounded-2xl text-sm text-slate-500 font-semibold flex items-center justify-center gap-2 hover:text-slate-800" onclick="showAuthModal()">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                النظام السحابي
+            </button>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-5 pb-16">
+        
+        <!-- قسم البحث -->
+        <section id="search-section" class="fade-in">
+            <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 mb-8">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="relative sm:w-1/3">
+                        <select id="searchYear" class="w-full p-4 pl-10 border-2 border-slate-100 rounded-2xl bg-slate-50 focus:border-medical-500 focus:bg-white outline-none text-lg font-bold text-slate-700 appearance-none transition-all"></select>
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                    <div class="relative w-full">
+                        <input type="text" id="searchInput" placeholder="ابحث باسم المادة أو الرمز..." class="w-full p-4 pr-12 border-2 border-slate-100 rounded-2xl bg-slate-50 focus:border-medical-500 focus:bg-white outline-none text-lg font-semibold transition-all placeholder:text-slate-400" onkeypress="if(event.key === 'Enter') performSearch()">
+                        <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                            <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                    </div>
+                    <button onclick="performSearch()" class="bg-medical-600 hover:bg-medical-700 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg shadow-medical-600/30 sm:w-auto w-full">بحث</button>
+                </div>
             </div>
+
+            <!-- حاوية النتائج -->
             <div id="results" class="space-y-4">
-                <div class="text-center text-slate-400 py-12 text-lg">أدخل كلمة البحث واختر السنة لعرض النتائج...</div>
+                <div class="text-center flex flex-col items-center justify-center py-16 opacity-60">
+                    <svg class="w-20 h-20 text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <p class="text-slate-500 font-semibold text-lg">أدخل كلمة البحث واختر السنة لعرض النتائج</p>
+                </div>
             </div>
         </section>
 
-        <section id="upload-section" class="hidden-section bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
-            <h2 class="text-2xl font-bold text-slate-800 mb-2 flex items-center gap-2"><span>🛡️</span> لوحة تحكم المسؤول</h2>
-            <p class="text-slate-500 mb-8 text-lg">يمكنك من هنا إضافة بيانات جديدة من ملفات الإكسل، أو مسح بيانات سابقة.</p>
-            
-            <div class="flex flex-col gap-3 mb-6 bg-blue-50 p-6 rounded-xl border border-blue-100">
-                <label class="font-bold text-blue-900 text-lg">1. رفع بيانات جديدة:</label>
-                <select id="uploadYear" class="p-4 border border-blue-200 rounded-xl bg-white outline-none w-full md:w-1/2 text-lg font-bold text-slate-700 focus:ring-2 focus:ring-blue-500"></select>
+        <!-- لوحة التحكم (المسؤول) -->
+        <section id="upload-section" class="hidden-section fade-in">
+            <!-- الرفع -->
+            <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 mb-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="bg-blue-50 p-3 rounded-2xl text-blue-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800">تحديث البيانات السحابية</h2>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                    <div class="relative sm:w-1/3">
+                        <select id="uploadYear" class="w-full p-4 pl-10 border-2 border-slate-100 rounded-2xl bg-slate-50 focus:border-blue-500 outline-none text-lg font-bold text-slate-700 appearance-none"></select>
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-2 border-dashed border-slate-300 rounded-[2rem] p-10 text-center bg-slate-50 hover:bg-blue-50 hover:border-blue-400 transition-all cursor-pointer group" onclick="document.getElementById('fileInput').click()">
+                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                        <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <div class="font-bold text-xl text-slate-700 mb-1">اضغط لاختيار ملفات الإكسل</div>
+                    <div class="text-sm text-slate-500 font-semibold">صيغ مدعومة: XLSX, XLS</div>
+                    <input type="file" id="fileInput" multiple accept=".xlsx, .xls" class="hidden">
+                </div>
             </div>
 
-            <div class="border-2 border-dashed border-slate-300 rounded-2xl p-12 text-center bg-slate-50 hover:bg-blue-50 hover:border-blue-400 transition cursor-pointer" onclick="document.getElementById('fileInput').click()">
-                <div class="text-6xl mb-4">📊</div>
-                <div class="font-bold text-xl text-slate-700">اضغط هنا لاختيار ملفات الإكسل للرفع</div>
-                <div class="text-base text-slate-500 mt-2">يدعم اختيار ملفات متعددة معاً (.xlsx, .xls)</div>
-                <input type="file" id="fileInput" multiple accept=".xlsx, .xls" class="hidden">
-            </div>
-
-            <div class="mt-10 bg-red-50 p-6 rounded-xl border border-red-200">
-                <h3 class="font-bold text-red-800 text-lg mb-2 flex items-center gap-2"><span>⚠️</span> منطقة الخطر (حذف البيانات)</h3>
-                <p class="text-slate-600 mb-4 text-sm">قم بمسح قاعدة بيانات سنة معينة بالكامل (تنبيه: لا يمكن التراجع عن هذه الخطوة).</p>
-                <div class="flex flex-col sm:flex-row gap-4 items-center">
-                    <select id="deleteYear" class="p-4 border border-red-300 rounded-xl bg-white outline-none w-full sm:w-1/2 text-lg font-bold text-slate-700 focus:ring-2 focus:ring-red-500"></select>
-                    <button onclick="deleteYearData()" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-xl font-bold transition shadow-md flex items-center justify-center gap-2 text-lg">
-                        <span>🗑️</span> مسح البيانات
+            <!-- الحذف (منطقة الخطر) -->
+            <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-red-100">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="bg-red-50 p-3 rounded-2xl text-red-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-red-700 text-xl">مسح البيانات بالكامل</h3>
+                        <p class="text-slate-500 text-sm font-semibold">تنبيه: هذا الإجراء نهائي ولا يمكن التراجع عنه.</p>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4 items-center bg-red-50/50 p-4 rounded-2xl border border-red-100">
+                    <div class="relative w-full sm:w-1/2">
+                        <select id="deleteYear" class="w-full p-4 pl-10 border-2 border-red-200 rounded-2xl bg-white focus:border-red-500 outline-none text-lg font-bold text-slate-700 appearance-none"></select>
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                    <button onclick="deleteYearData()" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg shadow-red-600/30">
+                        تنفيذ المسح
                     </button>
                 </div>
             </div>
 
-            <div id="uploadStatus" class="mt-8 hidden p-6 rounded-xl text-center text-lg shadow-sm border"></div>
+            <!-- شاشة الحالة مع شريط التقدم -->
+            <div id="uploadStatus" class="mt-8 hidden p-6 rounded-[2rem] border shadow-sm"></div>
         </section>
     </div>
 
-    <div id="authModal" class="hidden-section fixed inset-0 bg-slate-900 bg-opacity-70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md modal-enter relative">
-            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-2xl font-bold">&times;</button>
-            <div class="text-center mb-6">
-                <div class="text-5xl mb-4">🔒</div>
-                <h3 class="text-2xl font-bold text-slate-800">صلاحية المسؤول</h3>
-                <p class="text-slate-500 mt-2">يرجى إدخال الرمز السري للوصول إلى لوحة الإدارة.</p>
+    <!-- نافذة الرمز السري (تصميم حديث) -->
+    <div id="authModal" class="hidden-section fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl p-8 w-full max-w-sm modal-enter relative text-center">
+            <button onclick="closeAuthModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-700 transition bg-slate-100 p-2 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div class="w-20 h-20 bg-medical-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10 text-medical-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
             </div>
-            <input type="password" id="pinInput" placeholder="الرمز السري..." class="w-full p-4 border-2 border-slate-200 rounded-xl text-center text-2xl tracking-[0.5em] focus:border-blue-500 outline-none mb-4 font-bold text-slate-700" onkeypress="if(event.key === 'Enter') verifyPin()">
-            <p id="pinError" class="text-red-500 text-center font-semibold mb-4 hidden-section">الرمز غير صحيح، حاول مرة أخرى!</p>
-            <button onclick="verifyPin()" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-4 rounded-xl transition text-lg">تحقق ودخول</button>
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">تسجيل الدخول</h3>
+            <p class="text-slate-500 font-semibold mb-8 text-sm">أدخل الرمز السري الخاص بالمسؤول</p>
+            
+            <input type="password" id="pinInput" placeholder="••••" class="w-full p-4 border-2 border-slate-100 rounded-2xl text-center text-3xl tracking-[1em] focus:border-medical-500 focus:bg-medical-50 outline-none mb-4 font-bold text-slate-800 transition-colors" onkeypress="if(event.key === 'Enter') verifyPin()">
+            <p id="pinError" class="text-red-500 font-bold mb-4 hidden-section text-sm bg-red-50 p-2 rounded-lg">الرمز غير صحيح!</p>
+            
+            <button onclick="verifyPin()" class="w-full bg-medical-600 hover:bg-medical-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-medical-600/30 text-lg">دخول</button>
         </div>
     </div>
 
-    <div id="installModal" class="hidden-section fixed inset-0 bg-slate-900 bg-opacity-70 z-50 flex items-end sm:items-center justify-center pb-4 sm:p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm modal-enter border-t-4 border-blue-800 text-center relative">
-            <button onclick="closeInstallModal()" class="absolute top-3 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
-            <img src="./icon.png" class="w-20 h-20 mx-auto mb-4 drop-shadow-md rounded-2xl border border-slate-100">
-            <h3 class="text-xl font-bold text-slate-800 mb-2">تثبيت تطبيق EstiNcode</h3>
-            <p class="text-slate-500 mb-6 text-sm">قم بتثبيت التطبيق على جهازك للوصول السريع والعمل بدون إنترنت.</p>
+    <!-- نافذة التثبيت (PWA) -->
+    <div id="installModal" class="hidden-section fixed inset-0 bg-slate-900/60 z-50 flex items-end sm:items-center justify-center pb-6 sm:p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl p-6 w-full max-w-sm mx-4 modal-enter relative text-center">
+            <button onclick="closeInstallModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 bg-slate-100 p-1.5 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <img src="./icon.png" class="w-24 h-24 mx-auto mb-5 drop-shadow-xl rounded-[1.5rem]">
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">تطبيق EstiNcode</h3>
+            <p class="text-slate-500 font-semibold mb-6 text-sm">ثبت التطبيق للوصول السريع بدون إنترنت</p>
             <div id="installInstructions"></div>
-            <button onclick="closeInstallModal()" class="mt-4 text-slate-400 text-sm hover:text-slate-600 underline">ليس الآن</button>
         </div>
     </div>
 
@@ -122,27 +213,19 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 🔴 متغير عام للتحكم في إلغاء العملية
         let isOperationCancelled = false;
-
-        function cancelOperation() {
-            isOperationCancelled = true;
-        }
+        function cancelOperation() { isOperationCancelled = true; }
 
         function generateYears() {
             const selects = ['searchYear', 'uploadYear', 'deleteYear'];
-            const startYear = 2000;
-            const endYear = 2050;
             const defaultYear = 2026;
-
             selects.forEach(id => {
                 const selectElement = document.getElementById(id);
                 if(selectElement) {
                     selectElement.innerHTML = '';
-                    for (let year = startYear; year <= endYear; year++) {
+                    for (let year = 2000; year <= 2050; year++) {
                         const option = document.createElement('option');
-                        option.value = year;
-                        option.text = 'سنة ' + year;
+                        option.value = year; option.text = 'سنة ' + year;
                         if (year === defaultYear) option.selected = true;
                         selectElement.appendChild(option);
                     }
@@ -161,20 +244,17 @@
             if (isIOS) {
                 setTimeout(() => {
                     document.getElementById('installInstructions').innerHTML = `
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-right text-sm">
-                            1. اضغط على أيقونة المشاركة <b><svg class="inline w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg></b> بالأسفل.<br>
-                            2. اختر <b>"إضافة إلى الصفحة الرئيسية"</b>.
-                        </div>
-                    `;
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-right text-sm font-semibold text-slate-600">
+                            1. اضغط رمز المشاركة أسفل الشاشة.<br>
+                            2. اختر <b>إضافة للشاشة الرئيسية</b>.
+                        </div>`;
                     document.getElementById('installModal').classList.remove('hidden-section');
                 }, 2000);
             } else {
                 window.addEventListener('beforeinstallprompt', (e) => {
-                    e.preventDefault();
-                    deferredPrompt = e;
+                    e.preventDefault(); deferredPrompt = e;
                     document.getElementById('installInstructions').innerHTML = `
-                        <button onclick="triggerInstall()" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 rounded-xl transition text-lg shadow-md">⬇️ تثبيت التطبيق الآن</button>
-                    `;
+                        <button onclick="triggerInstall()" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 rounded-2xl transition shadow-lg text-lg">تثبيت التطبيق الآن</button>`;
                     setTimeout(() => document.getElementById('installModal').classList.remove('hidden-section'), 2000);
                 });
             }
@@ -189,7 +269,6 @@
                 });
             }
         }
-
         function closeInstallModal() { document.getElementById('installModal').classList.add('hidden-section'); }
 
         const SYSTEM_PIN = "2026"; 
@@ -217,14 +296,12 @@
             document.getElementById('pinError').classList.add('hidden-section');
             setTimeout(() => document.getElementById('pinInput').focus(), 100);
         }
-
         function closeAuthModal() { document.getElementById('authModal').classList.add('hidden-section'); }
 
         function verifyPin() {
             const input = document.getElementById('pinInput').value;
             if (input === SYSTEM_PIN) {
-                closeAuthModal();
-                switchTab('upload');
+                closeAuthModal(); switchTab('upload');
             } else {
                 document.getElementById('pinError').classList.remove('hidden-section');
                 document.getElementById('pinInput').value = '';
@@ -237,16 +314,19 @@
             const resultsDiv = document.getElementById('results');
             
             if(queryText.length < 2) {
-                resultsDiv.innerHTML = '<div class="text-center text-slate-500 font-semibold py-8 text-lg">يرجى كتابة حرفين على الأقل للبحث.</div>';
+                resultsDiv.innerHTML = '<div class="text-center text-slate-400 font-bold py-10 text-lg">يرجى كتابة حرفين على الأقل للبحث.</div>';
                 return;
             }
 
-            resultsDiv.innerHTML = '<div class="text-center text-blue-600 font-bold py-12 text-xl animate-pulse">⏳ جاري البحث في قاعدة البيانات...</div>';
+            resultsDiv.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-16">
+                    <svg class="animate-spin h-10 w-10 text-medical-500 mb-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <div class="text-medical-600 font-bold text-lg">جاري البحث في السحابة...</div>
+                </div>`;
 
             try {
                 const snapshot = await db.collection("medical_data_" + year).get();
-                let resultsHTML = '';
-                let count = 0;
+                let resultsHTML = ''; let count = 0;
 
                 snapshot.forEach(doc => {
                     const item = doc.data();
@@ -259,82 +339,75 @@
                         if(monthlyNeed.endsWith('.0')) monthlyNeed = monthlyNeed.slice(0, -2);
 
                         resultsHTML += `
-                            <div class="p-6 border border-slate-200 rounded-2xl hover:shadow-lg transition bg-white flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-                                <div class="flex-1">
-                                    <div class="text-blue-800 font-black text-xl ltr inline-block bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">${item.code}</div>
-                                    <div class="text-slate-700 mt-3 font-semibold text-lg leading-relaxed">${item.name}</div>
+                            <div class="bg-white p-6 rounded-[2rem] shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-slate-100 hover:border-medical-200 transition-colors flex flex-col md:flex-row justify-between items-start md:items-center gap-5 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-2 h-full bg-medical-500"></div>
+                                <div class="flex-1 pr-3">
+                                    <div class="inline-flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 mb-3">
+                                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                        <span class="text-slate-600 font-bold text-sm tracking-widest ltr">${item.code}</span>
+                                    </div>
+                                    <h3 class="text-slate-800 font-bold text-lg leading-relaxed">${item.name}</h3>
                                 </div>
-                                <div class="flex flex-row gap-3 w-full lg:w-auto">
-                                    <div class="bg-green-50 border border-green-200 text-green-700 px-5 py-3 rounded-xl text-center flex-1 lg:w-32 shadow-sm">
-                                        <div class="text-xs font-bold text-green-600 mb-1 uppercase tracking-wider">الاحتياج السنوي</div>
+                                <div class="flex flex-row gap-3 w-full md:w-auto">
+                                    <div class="bg-medical-50/50 border border-medical-100 text-medical-800 px-5 py-3 rounded-2xl text-center flex-1 md:w-32">
+                                        <div class="text-[10px] font-bold text-medical-500 mb-1 uppercase tracking-wider">الاحتياج السنوي</div>
                                         <div class="font-black text-2xl">${annualNeed}</div>
                                     </div>
-                                    <div class="bg-amber-50 border border-amber-200 text-amber-700 px-5 py-3 rounded-xl text-center flex-1 lg:w-32 shadow-sm">
-                                        <div class="text-xs font-bold text-amber-600 mb-1 uppercase tracking-wider">الاحتياج الشهري</div>
+                                    <div class="bg-amber-50/50 border border-amber-100 text-amber-800 px-5 py-3 rounded-2xl text-center flex-1 md:w-32">
+                                        <div class="text-[10px] font-bold text-amber-500 mb-1 uppercase tracking-wider">الاحتياج الشهري</div>
                                         <div class="font-black text-2xl">${monthlyNeed}</div>
                                     </div>
                                 </div>
-                            </div>
-                        `;
+                            </div>`;
                         count++;
                     }
                 });
 
                 if(count === 0) {
-                    resultsDiv.innerHTML = `<div class="text-center text-slate-500 font-semibold py-12 text-xl">لا توجد نتائج مطابقة لـ "${queryText}" في سنة ${year}</div>`;
+                    resultsDiv.innerHTML = `<div class="text-center text-slate-500 font-bold py-12 text-lg bg-slate-50 rounded-3xl border border-slate-100">لا توجد نتائج مطابقة في ${year}</div>`;
                 } else {
-                    resultsDiv.innerHTML = `<div class="text-slate-500 font-semibold mb-4">تم العثور على ${count} نتيجة:</div>` + resultsHTML;
+                    resultsDiv.innerHTML = `<div class="text-slate-400 font-bold mb-4 text-sm px-2">تم العثور على ${count} نتيجة:</div>` + resultsHTML;
                 }
             } catch (error) {
-                resultsDiv.innerHTML = '<div class="text-center text-red-500 font-bold py-12 text-xl">❌ حدث خطأ في الاتصال بقاعدة البيانات. تأكد من إعدادات Firestore.</div>';
+                resultsDiv.innerHTML = `<div class="text-center text-red-500 font-bold py-12 text-lg bg-red-50 rounded-3xl">حدث خطأ في الاتصال بالسحابة.</div>`;
             }
         }
 
+        // دالة الرفع
         document.getElementById('fileInput').addEventListener('change', async (e) => {
-            const files = e.target.files;
-            if(files.length === 0) return;
-            
+            const files = e.target.files; if(files.length === 0) return;
             const year = document.getElementById('uploadYear').value;
             const statusDiv = document.getElementById('uploadStatus');
             
-            isOperationCancelled = false; // تصفير زر الإلغاء قبل البدء
-
-            statusDiv.className = 'mt-8 p-6 rounded-xl border bg-blue-50 border-blue-200 block';
-            statusDiv.innerHTML = `<div class="font-bold text-blue-800 text-lg mb-2">⏳ جاري قراءة الملفات واستخراج البيانات لعام ${year}...</div>`;
+            isOperationCancelled = false;
+            statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-blue-50 border-blue-100 block fade-in';
+            statusDiv.innerHTML = `<div class="font-bold text-blue-800 text-lg flex items-center gap-2"><svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> جاري استخراج البيانات...</div>`;
             
             let finalData = [];
-
             for(let i=0; i<files.length; i++) {
                 try {
                     const data = await files[i].arrayBuffer();
                     const workbook = XLSX.read(data);
-                    
                     workbook.SheetNames.forEach(sheetName => {
                         const sheet = workbook.Sheets[sheetName];
                         const jsonData = XLSX.utils.sheet_to_json(sheet, {header: 1});
-
                         let codeCol = -1, nameCol = -1, needCol = -1, headerRowIndex = -1;
-
                         for(let rowIdx = 0; rowIdx < Math.min(15, jsonData.length); rowIdx++) {
-                            const row = jsonData[rowIdx];
-                            if (!row) continue;
+                            const row = jsonData[rowIdx]; if (!row) continue;
                             for(let colIdx = 0; colIdx < row.length; colIdx++) {
                                 const cellValue = String(row[colIdx] || '').toLowerCase().trim();
-                                if(cellValue.includes('code') || cellValue.includes('رمز') || cellValue.includes('نبيذة')) codeCol = colIdx;
-                                if(cellValue.includes('item') || cellValue.includes('مادة') || cellValue.includes('name') || cellValue.includes('اسم')) nameCol = colIdx;
-                                if((cellValue.includes('احتياج') || cellValue.includes('need') || cellValue.includes('تقدير')) && cellValue.includes(year)) needCol = colIdx;
+                                if(cellValue.includes('code') || cellValue.includes('رمز')) codeCol = colIdx;
+                                if(cellValue.includes('item') || cellValue.includes('مادة') || cellValue.includes('اسم')) nameCol = colIdx;
+                                if((cellValue.includes('احتياج') || cellValue.includes('need')) && cellValue.includes(year)) needCol = colIdx;
                             }
                             if (codeCol !== -1 && nameCol !== -1) { headerRowIndex = rowIdx; break; }
                         }
-
                         const codeRegex = /[A-Z]{2,6}-[A-Z0-9]{2,5}-\d{1,5}/i;
-
                         jsonData.forEach((row, rowIdx) => {
                             if (rowIdx <= headerRowIndex) return; 
                             let code = "", name = "", need = "0";
                             if (codeCol !== -1 && nameCol !== -1) {
-                                code = String(row[codeCol] || '').trim();
-                                name = String(row[nameCol] || '').trim();
+                                code = String(row[codeCol] || '').trim(); name = String(row[nameCol] || '').trim();
                                 if(needCol !== -1 && row[needCol] !== undefined) need = String(row[needCol]).trim();
                             } else {
                                 for(let j=0; j<row.length; j++) {
@@ -355,155 +428,113 @@
                             }
                         });
                     });
-                } catch (err) { console.error("Error reading file:", err); }
+                } catch (err) {}
             }
 
             const uniqueData = Array.from(new Set(finalData.map(a => a.code))).map(code => finalData.find(a => a.code === code));
-
             if(uniqueData.length === 0) {
-                statusDiv.className = 'mt-8 p-6 rounded-xl border bg-red-50 border-red-200 block';
-                statusDiv.innerHTML = '<div class="font-bold text-red-700 text-lg">⚠️ لم يتم العثور على أي بيانات صحيحة في الملفات المرفوعة.</div>';
+                statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-red-50 border-red-100 block fade-in';
+                statusDiv.innerHTML = '<div class="font-bold text-red-700 text-lg">لم يتم العثور على بيانات صحيحة.</div>';
                 return;
             }
 
-            // واجهة الرفع مع زر الإلغاء
             statusDiv.innerHTML = `
-                <div class="flex justify-between items-center mb-3">
-                    <div class="font-bold text-blue-900 text-lg">☁️ جاري الرفع (${year})</div>
-                    <button onclick="cancelOperation()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition">إلغاء 🛑</button>
+                <div class="flex justify-between items-center mb-4">
+                    <div class="font-bold text-blue-900 text-lg flex items-center gap-2"><svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg> جاري الرفع (${year})</div>
+                    <button onclick="cancelOperation()" class="bg-white hover:bg-slate-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-all flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> إلغاء</button>
                 </div>
-                <div class="w-full bg-slate-200 rounded-full h-5 mb-2 overflow-hidden shadow-inner">
-                    <div id="uploadProgressBar" class="bg-blue-600 h-5 rounded-full progress-bar-fill" style="width: 0%"></div>
+                <div class="w-full bg-blue-100/50 rounded-full h-4 mb-3 overflow-hidden">
+                    <div id="uploadProgressBar" class="bg-blue-600 h-4 rounded-full progress-bar-fill" style="width: 0%"></div>
                 </div>
-                <div class="flex justify-between text-sm font-bold text-blue-800">
+                <div class="flex justify-between text-sm font-bold text-blue-800/70">
                     <span id="uploadProgressText">0 من ${uniqueData.length} مادة</span>
                     <span id="uploadProgressPercent">0%</span>
                 </div>
             `;
 
-            let progressBar = document.getElementById('uploadProgressBar');
-            let progressText = document.getElementById('uploadProgressText');
-            let progressPercent = document.getElementById('uploadProgressPercent');
+            let progressBar = document.getElementById('uploadProgressBar'), progressText = document.getElementById('uploadProgressText'), progressPercent = document.getElementById('uploadProgressPercent');
 
             try {
                 const collectionRef = db.collection("medical_data_" + year);
-                let batch = db.batch();
-                let count = 0;
-                let totalCommitted = 0; // لحساب ما تم رفعه فعلياً
+                let batch = db.batch(), count = 0, totalCommitted = 0;
 
                 for (let i = 0; i < uniqueData.length; i++) {
-                    // التحقق من طلب الإلغاء
                     if (isOperationCancelled) {
-                        statusDiv.className = 'mt-8 p-6 rounded-xl border bg-amber-50 border-amber-200 block';
-                        statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-lg">⚠️ تم إيقاف الرفع بناءً على طلبك! تم حفظ ${totalCommitted} مادة فقط.</div>`;
-                        document.getElementById('fileInput').value = "";
-                        return; // الخروج من العملية فوراً
+                        statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-amber-50 border-amber-200 block fade-in';
+                        statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-lg">تم إيقاف الرفع! حفظ ${totalCommitted} مادة فقط.</div>`;
+                        document.getElementById('fileInput').value = ""; return;
                     }
-
                     const docRef = collectionRef.doc(uniqueData[i].code);
-                    batch.set(docRef, uniqueData[i]);
-                    count++;
-
+                    batch.set(docRef, uniqueData[i]); count++;
                     if (count === 400 || i === uniqueData.length - 1) {
-                        await batch.commit();
-                        totalCommitted += count;
-                        batch = db.batch();
-                        count = 0;
-                        
+                        await batch.commit(); totalCommitted += count; batch = db.batch(); count = 0;
                         let percent = Math.round((totalCommitted / uniqueData.length) * 100);
-                        progressBar.style.width = percent + '%';
-                        progressText.innerText = `${totalCommitted} من ${uniqueData.length} مادة`;
-                        progressPercent.innerText = percent + '%';
+                        progressBar.style.width = percent + '%'; progressText.innerText = `${totalCommitted} من ${uniqueData.length} مادة`; progressPercent.innerText = percent + '%';
                     }
                 }
-
-                statusDiv.className = 'mt-8 p-6 rounded-xl border bg-green-50 border-green-200 block';
-                statusDiv.innerHTML = `<div class="font-bold text-green-800 text-lg">✅ اكتمل العمل بنجاح! تم حفظ <strong>${uniqueData.length}</strong> مادة في سنة ${year}.</div>`;
+                statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-medical-50 border-medical-100 block fade-in';
+                statusDiv.innerHTML = `<div class="font-bold text-medical-800 text-lg flex items-center gap-2"><svg class="w-6 h-6 text-medical-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> اكتمل بنجاح! تم حفظ ${uniqueData.length} مادة.</div>`;
                 document.getElementById('fileInput').value = "";
             } catch (error) {
-                statusDiv.className = 'mt-8 p-6 rounded-xl border bg-red-50 border-red-200 block';
-                statusDiv.innerHTML = `<div class="font-bold text-red-700 text-lg" style="direction:ltr; text-align:left;">❌ Error: ${error.message}</div>`;
+                statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-red-50 border-red-100 block fade-in';
+                statusDiv.innerHTML = `<div class="font-bold text-red-700 text-lg ltr text-left">Error: ${error.message}</div>`;
             }
         });
 
+        // دالة الحذف
         async function deleteYearData() {
             const year = document.getElementById('deleteYear').value;
-            const confirmMsg = `⚠️ تحذير خطير ⚠️\n\nهل أنت متأكد أنك تريد حذف جميع البيانات المرفوعة لسنة ${year} بالكامل؟\n\nاضغط OK للحذف النهائي، أو Cancel للتراجع.`;
-            
-            if (!confirm(confirmMsg)) return;
+            if (!confirm(`هل أنت متأكد من مسح بيانات ${year} بالكامل؟`)) return;
 
             const statusDiv = document.getElementById('uploadStatus');
-            isOperationCancelled = false; // تصفير زر الإلغاء
-
-            statusDiv.className = 'mt-8 p-6 rounded-xl border bg-amber-50 border-amber-200 block';
-            statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-lg">⏳ جاري فحص بيانات سنة ${year}...</div>`;
+            isOperationCancelled = false;
+            statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-amber-50 border-amber-100 block fade-in';
+            statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-lg flex items-center gap-2"><svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> جاري فحص البيانات...</div>`;
 
             try {
                 const collectionRef = db.collection("medical_data_" + year);
                 const snapshot = await collectionRef.get();
-                
                 if (snapshot.empty) {
-                    statusDiv.className = 'mt-8 p-6 rounded-xl border bg-blue-50 border-blue-200 block';
-                    statusDiv.innerHTML = `<div class="font-bold text-blue-800 text-lg">ℹ️ لا توجد أي بيانات مسجلة لسنة ${year} ليتم حذفها.</div>`;
+                    statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-slate-50 border-slate-200 block fade-in';
+                    statusDiv.innerHTML = `<div class="font-bold text-slate-600 text-lg">لا توجد بيانات لسنة ${year}.</div>`;
                     return;
                 }
-
                 const totalItems = snapshot.size;
-
-                // واجهة الحذف مع زر الإلغاء
                 statusDiv.innerHTML = `
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="font-bold text-red-800 text-lg">🗑️ جاري مسح البيانات (${year})</div>
-                        <button onclick="cancelOperation()" class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition">إيقاف الحذف 🛑</button>
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="font-bold text-red-800 text-lg flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> جاري المسح (${year})</div>
+                        <button onclick="cancelOperation()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-all">إيقاف</button>
                     </div>
-                    <div class="w-full bg-slate-200 rounded-full h-5 mb-2 overflow-hidden shadow-inner">
-                        <div id="deleteProgressBar" class="bg-red-500 h-5 rounded-full progress-bar-fill" style="width: 0%"></div>
+                    <div class="w-full bg-red-100/50 rounded-full h-4 mb-3 overflow-hidden">
+                        <div id="deleteProgressBar" class="bg-red-500 h-4 rounded-full progress-bar-fill" style="width: 0%"></div>
                     </div>
-                    <div class="flex justify-between text-sm font-bold text-red-800">
+                    <div class="flex justify-between text-sm font-bold text-red-800/70">
                         <span id="deleteProgressText">0 من ${totalItems} مادة</span>
                         <span id="deleteProgressPercent">0%</span>
                     </div>
                 `;
 
-                let progressBar = document.getElementById('deleteProgressBar');
-                let progressText = document.getElementById('deleteProgressText');
-                let progressPercent = document.getElementById('deleteProgressPercent');
-
-                let batch = db.batch();
-                let count = 0;
-                let totalCommitted = 0;
-                let docsArray = snapshot.docs;
+                let progressBar = document.getElementById('deleteProgressBar'), progressText = document.getElementById('deleteProgressText'), progressPercent = document.getElementById('deleteProgressPercent');
+                let batch = db.batch(), count = 0, totalCommitted = 0, docsArray = snapshot.docs;
 
                 for (let i = 0; i < docsArray.length; i++) {
-                    // التحقق من طلب الإلغاء
                     if (isOperationCancelled) {
-                        statusDiv.className = 'mt-8 p-6 rounded-xl border bg-amber-50 border-amber-200 block';
-                        statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-lg">⚠️ تم إيقاف عملية الحذف! تم مسح ${totalCommitted} مادة فقط.</div>`;
-                        return; // الخروج فوراً
+                        statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-amber-50 border-amber-200 block fade-in';
+                        statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-lg">تم الإيقاف! مسح ${totalCommitted} مادة فقط.</div>`;
+                        return;
                     }
-
-                    batch.delete(docsArray[i].ref);
-                    count++;
-
+                    batch.delete(docsArray[i].ref); count++;
                     if (count === 400 || i === docsArray.length - 1) {
-                        await batch.commit();
-                        totalCommitted += count;
-                        batch = db.batch();
-                        count = 0;
-
+                        await batch.commit(); totalCommitted += count; batch = db.batch(); count = 0;
                         let percent = Math.round((totalCommitted / totalItems) * 100);
-                        progressBar.style.width = percent + '%';
-                        progressText.innerText = `${totalCommitted} من ${totalItems} مادة`;
-                        progressPercent.innerText = percent + '%';
+                        progressBar.style.width = percent + '%'; progressText.innerText = `${totalCommitted} من ${totalItems} مادة`; progressPercent.innerText = percent + '%';
                     }
                 }
-
-                statusDiv.className = 'mt-8 p-6 rounded-xl border bg-green-50 border-green-200 block';
-                statusDiv.innerHTML = `<div class="font-bold text-green-800 text-lg">✅ اكتملت العملية بنجاح! تم مسح <strong>${totalCommitted}</strong> مادة من بيانات سنة ${year}.</div>`;
-
+                statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-green-50 border-green-100 block fade-in';
+                statusDiv.innerHTML = `<div class="font-bold text-green-800 text-lg flex items-center gap-2"><svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> اكتملت العملية! تم مسح ${totalCommitted} مادة.</div>`;
             } catch (error) {
-                statusDiv.className = 'mt-8 p-6 rounded-xl border bg-red-50 border-red-200 block';
-                statusDiv.innerHTML = `<div class="font-bold text-red-700 text-lg" style="direction:ltr; text-align:left;">❌ حدث خطأ أثناء الحذف: ${error.message}</div>`;
+                statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-red-50 border-red-100 block fade-in';
+                statusDiv.innerHTML = `<div class="font-bold text-red-700 text-lg ltr text-left">Error: ${error.message}</div>`;
             }
         }
     </script>
