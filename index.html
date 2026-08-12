@@ -44,13 +44,9 @@
             <h2 class="text-2xl font-bold text-slate-800 mb-6">البحث في قاعدة البيانات السحابية</h2>
             
             <div class="flex flex-col md:flex-row gap-4 mb-8">
-                <select id="searchYear" class="p-4 border border-slate-300 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none md:w-1/4 text-lg font-semibold text-slate-700">
-                    <option value="2026">سنة 2026</option>
-                    <option value="2027">سنة 2027</option>
-                    <option value="2028">سنة 2028</option>
-                    <option value="2029">سنة 2029</option>
-                    <option value="2030">سنة 2030</option>
-                </select>
+                <!-- قائمة سنوات البحث (فارغة وسيتم ملؤها برمجياً) -->
+                <select id="searchYear" class="p-4 border border-slate-300 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none md:w-1/4 text-lg font-semibold text-slate-700"></select>
+                
                 <input type="text" id="searchInput" placeholder="اكتب اسم المادة أو الرمز الوطني للبحث..." class="p-4 border border-slate-300 rounded-xl w-full focus:ring-2 focus:ring-blue-500 outline-none text-lg" onkeypress="if(event.key === 'Enter') performSearch()">
                 <button onclick="performSearch()" class="bg-blue-800 hover:bg-blue-900 text-white px-8 py-4 rounded-xl font-bold text-lg transition shadow-md">بحث</button>
             </div>
@@ -67,13 +63,8 @@
             <!-- أداة الرفع -->
             <div class="flex flex-col gap-3 mb-6 bg-blue-50 p-6 rounded-xl border border-blue-100">
                 <label class="font-bold text-blue-900 text-lg">1. رفع بيانات جديدة:</label>
-                <select id="uploadYear" class="p-4 border border-blue-200 rounded-xl bg-white outline-none w-full md:w-1/2 text-lg font-bold text-slate-700 focus:ring-2 focus:ring-blue-500">
-                    <option value="2026">سنة 2026</option>
-                    <option value="2027">سنة 2027</option>
-                    <option value="2028">سنة 2028</option>
-                    <option value="2029">سنة 2029</option>
-                    <option value="2030">سنة 2030</option>
-                </select>
+                <!-- قائمة سنوات الرفع (فارغة وسيتم ملؤها برمجياً) -->
+                <select id="uploadYear" class="p-4 border border-blue-200 rounded-xl bg-white outline-none w-full md:w-1/2 text-lg font-bold text-slate-700 focus:ring-2 focus:ring-blue-500"></select>
             </div>
 
             <div class="border-2 border-dashed border-slate-300 rounded-2xl p-12 text-center bg-slate-50 hover:bg-blue-50 hover:border-blue-400 transition cursor-pointer" onclick="document.getElementById('fileInput').click()">
@@ -83,25 +74,20 @@
                 <input type="file" id="fileInput" multiple accept=".xlsx, .xls" class="hidden">
             </div>
 
-            <!-- أداة الحذف الجديدة (منطقة الخطر) -->
+            <!-- أداة الحذف (منطقة الخطر) -->
             <div class="mt-10 bg-red-50 p-6 rounded-xl border border-red-200">
                 <h3 class="font-bold text-red-800 text-lg mb-2 flex items-center gap-2"><span>⚠️</span> منطقة الخطر (حذف البيانات)</h3>
                 <p class="text-slate-600 mb-4 text-sm">قم بمسح قاعدة بيانات سنة معينة بالكامل (تنبيه: لا يمكن التراجع عن هذه الخطوة).</p>
                 <div class="flex flex-col sm:flex-row gap-4 items-center">
-                    <select id="deleteYear" class="p-4 border border-red-300 rounded-xl bg-white outline-none w-full sm:w-1/2 text-lg font-bold text-slate-700 focus:ring-2 focus:ring-red-500">
-                        <option value="2026">سنة 2026</option>
-                        <option value="2027">سنة 2027</option>
-                        <option value="2028">سنة 2028</option>
-                        <option value="2029">سنة 2029</option>
-                        <option value="2030">سنة 2030</option>
-                    </select>
+                    <!-- قائمة سنوات الحذف (فارغة وسيتم ملؤها برمجياً) -->
+                    <select id="deleteYear" class="p-4 border border-red-300 rounded-xl bg-white outline-none w-full sm:w-1/2 text-lg font-bold text-slate-700 focus:ring-2 focus:ring-red-500"></select>
+                    
                     <button onclick="deleteYearData()" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-xl font-bold transition shadow-md flex items-center justify-center gap-2 text-lg">
                         <span>🗑️</span> مسح البيانات
                     </button>
                 </div>
             </div>
 
-            <!-- شاشة حالة الرفع/الحذف -->
             <div id="uploadStatus" class="mt-8 hidden p-6 rounded-xl font-bold text-center text-lg"></div>
         </section>
     </div>
@@ -144,6 +130,32 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+
+        // 🔴 الدالة الجديدة: توليد السنوات من 2000 إلى 2050
+        function generateYears() {
+            const selects = ['searchYear', 'uploadYear', 'deleteYear'];
+            const startYear = 2000;
+            const endYear = 2050;
+            const defaultYear = 2026;
+
+            selects.forEach(id => {
+                const selectElement = document.getElementById(id);
+                if(selectElement) {
+                    selectElement.innerHTML = '';
+                    for (let year = startYear; year <= endYear; year++) {
+                        const option = document.createElement('option');
+                        option.value = year;
+                        option.text = 'سنة ' + year;
+                        if (year === defaultYear) {
+                            option.selected = true;
+                        }
+                        selectElement.appendChild(option);
+                    }
+                }
+            });
+        }
+        // تشغيل الدالة فور تحميل الصفحة
+        generateYears();
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
@@ -405,6 +417,10 @@
                     }
                 }
 
+                if (count > 0) {
+                    await batch.commit();
+                }
+
                 statusDiv.classList.remove('animate-pulse', 'bg-blue-100', 'text-blue-700');
                 statusDiv.classList.add('bg-green-100', 'text-green-800');
                 statusDiv.innerHTML = `✅ اكتمل العمل بنجاح! تم حفظ <strong>${uniqueData.length}</strong> مادة بأمان في قاعدة بيانات ${year}. يمكنك الآن البحث عنها.`;
@@ -417,7 +433,6 @@
             }
         });
 
-        // 🔴 الدالة الجديدة: مسح بيانات السنة بالكامل
         async function deleteYearData() {
             const year = document.getElementById('deleteYear').value;
             const confirmMsg = `⚠️ تحذير خطير ⚠️\n\nهل أنت متأكد أنك تريد حذف جميع البيانات المرفوعة لسنة ${year} بالكامل؟\n\nاضغط OK للحذف النهائي، أو Cancel للتراجع.`;
@@ -450,7 +465,6 @@
                     count++;
                     totalDeleted++;
 
-                    // الإرسال في حزم من 400 ملف لتسريع العملية ومنع الأخطاء
                     if (count === 400) {
                         await batch.commit();
                         batch = db.batch();
@@ -458,7 +472,6 @@
                     }
                 }
 
-                // رفع المتبقي
                 if (count > 0) {
                     await batch.commit();
                 }
