@@ -18,6 +18,8 @@
         .hidden-section { display: none !important; }
         .modal-enter { animation: modalFadeIn 0.3s ease-out forwards; }
         @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95) translateY(-10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        /* أنيميشن ناعم لشريط التقدم */
+        .progress-bar-fill { transition: width 0.4s ease-out; }
     </style>
 </head>
 <body class="text-slate-800 relative">
@@ -44,9 +46,7 @@
             <h2 class="text-2xl font-bold text-slate-800 mb-6">البحث في قاعدة البيانات السحابية</h2>
             
             <div class="flex flex-col md:flex-row gap-4 mb-8">
-                <!-- قائمة سنوات البحث (فارغة وسيتم ملؤها برمجياً) -->
                 <select id="searchYear" class="p-4 border border-slate-300 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none md:w-1/4 text-lg font-semibold text-slate-700"></select>
-                
                 <input type="text" id="searchInput" placeholder="اكتب اسم المادة أو الرمز الوطني للبحث..." class="p-4 border border-slate-300 rounded-xl w-full focus:ring-2 focus:ring-blue-500 outline-none text-lg" onkeypress="if(event.key === 'Enter') performSearch()">
                 <button onclick="performSearch()" class="bg-blue-800 hover:bg-blue-900 text-white px-8 py-4 rounded-xl font-bold text-lg transition shadow-md">بحث</button>
             </div>
@@ -63,7 +63,6 @@
             <!-- أداة الرفع -->
             <div class="flex flex-col gap-3 mb-6 bg-blue-50 p-6 rounded-xl border border-blue-100">
                 <label class="font-bold text-blue-900 text-lg">1. رفع بيانات جديدة:</label>
-                <!-- قائمة سنوات الرفع (فارغة وسيتم ملؤها برمجياً) -->
                 <select id="uploadYear" class="p-4 border border-blue-200 rounded-xl bg-white outline-none w-full md:w-1/2 text-lg font-bold text-slate-700 focus:ring-2 focus:ring-blue-500"></select>
             </div>
 
@@ -79,16 +78,15 @@
                 <h3 class="font-bold text-red-800 text-lg mb-2 flex items-center gap-2"><span>⚠️</span> منطقة الخطر (حذف البيانات)</h3>
                 <p class="text-slate-600 mb-4 text-sm">قم بمسح قاعدة بيانات سنة معينة بالكامل (تنبيه: لا يمكن التراجع عن هذه الخطوة).</p>
                 <div class="flex flex-col sm:flex-row gap-4 items-center">
-                    <!-- قائمة سنوات الحذف (فارغة وسيتم ملؤها برمجياً) -->
                     <select id="deleteYear" class="p-4 border border-red-300 rounded-xl bg-white outline-none w-full sm:w-1/2 text-lg font-bold text-slate-700 focus:ring-2 focus:ring-red-500"></select>
-                    
                     <button onclick="deleteYearData()" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-xl font-bold transition shadow-md flex items-center justify-center gap-2 text-lg">
                         <span>🗑️</span> مسح البيانات
                     </button>
                 </div>
             </div>
 
-            <div id="uploadStatus" class="mt-8 hidden p-6 rounded-xl font-bold text-center text-lg"></div>
+            <!-- شاشة حالة الرفع/الحذف (مع شريط التقدم) -->
+            <div id="uploadStatus" class="mt-8 hidden p-6 rounded-xl text-center text-lg shadow-sm border"></div>
         </section>
     </div>
 
@@ -131,7 +129,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 🔴 الدالة الجديدة: توليد السنوات من 2000 إلى 2050
+        // دالة توليد السنوات
         function generateYears() {
             const selects = ['searchYear', 'uploadYear', 'deleteYear'];
             const startYear = 2000;
@@ -146,20 +144,15 @@
                         const option = document.createElement('option');
                         option.value = year;
                         option.text = 'سنة ' + year;
-                        if (year === defaultYear) {
-                            option.selected = true;
-                        }
+                        if (year === defaultYear) option.selected = true;
                         selectElement.appendChild(option);
                     }
                 }
             });
         }
-        // تشغيل الدالة فور تحميل الصفحة
         generateYears();
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 
         let deferredPrompt;
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -171,7 +164,7 @@
                     document.getElementById('installInstructions').innerHTML = `
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-right text-sm">
                             1. اضغط على أيقونة المشاركة <b><svg class="inline w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg></b> بالأسفل.<br>
-                            2. اختر <b>"إضافة إلى الصفحة الرئيسية"</b> <br>(Add to Home Screen).
+                            2. اختر <b>"إضافة إلى الصفحة الرئيسية"</b>.
                         </div>
                     `;
                     document.getElementById('installModal').classList.remove('hidden-section');
@@ -181,13 +174,9 @@
                     e.preventDefault();
                     deferredPrompt = e;
                     document.getElementById('installInstructions').innerHTML = `
-                        <button onclick="triggerInstall()" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 rounded-xl transition text-lg shadow-md">
-                            ⬇️ تثبيت التطبيق الآن
-                        </button>
+                        <button onclick="triggerInstall()" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 rounded-xl transition text-lg shadow-md">⬇️ تثبيت التطبيق الآن</button>
                     `;
-                    setTimeout(() => {
-                        document.getElementById('installModal').classList.remove('hidden-section');
-                    }, 2000);
+                    setTimeout(() => document.getElementById('installModal').classList.remove('hidden-section'), 2000);
                 });
             }
         }
@@ -202,9 +191,7 @@
             }
         }
 
-        function closeInstallModal() {
-            document.getElementById('installModal').classList.add('hidden-section');
-        }
+        function closeInstallModal() { document.getElementById('installModal').classList.add('hidden-section'); }
 
         const SYSTEM_PIN = "2026"; 
 
@@ -232,9 +219,7 @@
             setTimeout(() => document.getElementById('pinInput').focus(), 100);
         }
 
-        function closeAuthModal() {
-            document.getElementById('authModal').classList.add('hidden-section');
-        }
+        function closeAuthModal() { document.getElementById('authModal').classList.add('hidden-section'); }
 
         function verifyPin() {
             const input = document.getElementById('pinInput').value;
@@ -302,21 +287,21 @@
                     resultsDiv.innerHTML = `<div class="text-slate-500 font-semibold mb-4">تم العثور على ${count} نتيجة:</div>` + resultsHTML;
                 }
             } catch (error) {
-                console.error("Error:", error);
-                resultsDiv.innerHTML = '<div class="text-center text-red-500 font-bold py-12 text-xl">❌ حدث خطأ في الاتصال بقاعدة البيانات. تأكد من تفعيل (Test Mode) في إعدادات Firestore.</div>';
+                resultsDiv.innerHTML = '<div class="text-center text-red-500 font-bold py-12 text-xl">❌ حدث خطأ في الاتصال بقاعدة البيانات. تأكد من إعدادات Firestore.</div>';
             }
         }
 
+        // 🔴 دالة الرفع مع شريط التقدم
         document.getElementById('fileInput').addEventListener('change', async (e) => {
             const files = e.target.files;
             if(files.length === 0) return;
             
             const year = document.getElementById('uploadYear').value;
             const statusDiv = document.getElementById('uploadStatus');
-            statusDiv.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700', 'bg-amber-100', 'text-amber-800');
-            statusDiv.classList.add('bg-blue-100', 'text-blue-700', 'animate-pulse');
-            statusDiv.style.display = 'block';
-            statusDiv.innerHTML = `⏳ جاري قراءة الملفات واستخراج البيانات لعام ${year}... يرجى الانتظار.`;
+            
+            // تهيئة واجهة الرفع
+            statusDiv.className = 'mt-8 p-6 rounded-xl border bg-blue-50 border-blue-200 block';
+            statusDiv.innerHTML = `<div class="font-bold text-blue-800 text-lg mb-2">⏳ جاري قراءة الملفات واستخراج البيانات لعام ${year}...</div>`;
             
             let finalData = [];
 
@@ -340,99 +325,101 @@
                                 if(cellValue.includes('item') || cellValue.includes('مادة') || cellValue.includes('name') || cellValue.includes('اسم')) nameCol = colIdx;
                                 if((cellValue.includes('احتياج') || cellValue.includes('need') || cellValue.includes('تقدير')) && cellValue.includes(year)) needCol = colIdx;
                             }
-                            if (codeCol !== -1 && nameCol !== -1) {
-                                headerRowIndex = rowIdx;
-                                break;
-                            }
+                            if (codeCol !== -1 && nameCol !== -1) { headerRowIndex = rowIdx; break; }
                         }
 
                         const codeRegex = /[A-Z]{2,6}-[A-Z0-9]{2,5}-\d{1,5}/i;
 
                         jsonData.forEach((row, rowIdx) => {
                             if (rowIdx <= headerRowIndex) return; 
-                            
                             let code = "", name = "", need = "0";
-
                             if (codeCol !== -1 && nameCol !== -1) {
                                 code = String(row[codeCol] || '').trim();
                                 name = String(row[nameCol] || '').trim();
-                                if(needCol !== -1 && row[needCol] !== undefined) {
-                                    need = String(row[needCol]).trim();
-                                }
+                                if(needCol !== -1 && row[needCol] !== undefined) need = String(row[needCol]).trim();
                             } else {
                                 for(let j=0; j<row.length; j++) {
                                     if(typeof row[j] === 'string' && codeRegex.test(row[j].trim())) {
                                         code = row[j].trim();
                                         if(j + 1 < row.length && row[j+1]) name = String(row[j+1]).trim();
                                         for(let k=row.length-1; k>j; k--) {
-                                            if(!isNaN(row[k]) && String(row[k]).trim() !== "") {
-                                                need = String(row[k]).trim();
-                                                break;
-                                            }
+                                            if(!isNaN(row[k]) && String(row[k]).trim() !== "") { need = String(row[k]).trim(); break; }
                                         }
                                         break;
                                     }
                                 }
                             }
-
                             if(need === "" || isNaN(need)) need = "0";
                             if(code && name && name.length > 2 && code.toLowerCase() !== "code") {
                                 let safeCode = String(code).replace(/[\/\\]/g, '-').trim();
-                                if (safeCode.length < 50) { 
-                                    finalData.push({ code: safeCode, name: name, need: need });
-                                }
+                                if (safeCode.length < 50) finalData.push({ code: safeCode, name: name, need: need });
                             }
                         });
                     });
-                } catch (err) {
-                    console.error("Error reading file:", err);
-                }
+                } catch (err) { console.error("Error reading file:", err); }
             }
 
             const uniqueData = Array.from(new Set(finalData.map(a => a.code))).map(code => finalData.find(a => a.code === code));
 
             if(uniqueData.length === 0) {
-                statusDiv.classList.remove('animate-pulse', 'bg-blue-100', 'text-blue-700');
-                statusDiv.classList.add('bg-red-100', 'text-red-700');
-                statusDiv.innerHTML = '⚠️ لم يتم العثور على أي بيانات صحيحة في الملفات المرفوعة.';
+                statusDiv.className = 'mt-8 p-6 rounded-xl border bg-red-50 border-red-200 block';
+                statusDiv.innerHTML = '<div class="font-bold text-red-700 text-lg">⚠️ لم يتم العثور على أي بيانات صحيحة في الملفات المرفوعة.</div>';
                 return;
             }
 
-            statusDiv.innerHTML = `☁️ جاري رفع ${uniqueData.length} مادة إلى قاعدة البيانات السحابية (Firebase)... يرجى عدم إغلاق الصفحة.`;
+            // إنشاء واجهة شريط التقدم للرفع
+            statusDiv.innerHTML = `
+                <div class="font-bold text-blue-900 text-lg mb-3">☁️ جاري الرفع إلى قاعدة البيانات (${year})</div>
+                <div class="w-full bg-slate-200 rounded-full h-5 mb-2 overflow-hidden shadow-inner">
+                    <div id="uploadProgressBar" class="bg-blue-600 h-5 rounded-full progress-bar-fill" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-sm font-bold text-blue-800">
+                    <span id="uploadProgressText">0 من ${uniqueData.length} مادة</span>
+                    <span id="uploadProgressPercent">0%</span>
+                </div>
+            `;
+
+            let progressBar = document.getElementById('uploadProgressBar');
+            let progressText = document.getElementById('uploadProgressText');
+            let progressPercent = document.getElementById('uploadProgressPercent');
 
             try {
                 const collectionRef = db.collection("medical_data_" + year);
                 let batch = db.batch();
                 let count = 0;
+                let totalUploaded = 0;
 
                 for (let i = 0; i < uniqueData.length; i++) {
                     const docRef = collectionRef.doc(uniqueData[i].code);
                     batch.set(docRef, uniqueData[i]);
                     count++;
+                    totalUploaded++;
 
+                    // تحديث شريط التقدم كلما أرسلنا حزمة (400) أو انتهينا
                     if (count === 400 || i === uniqueData.length - 1) {
                         await batch.commit();
                         batch = db.batch();
                         count = 0;
+                        
+                        // حساب النسبة المئوية وتحديث الواجهة
+                        let percent = Math.round((totalUploaded / uniqueData.length) * 100);
+                        progressBar.style.width = percent + '%';
+                        progressText.innerText = `${totalUploaded} من ${uniqueData.length} مادة`;
+                        progressPercent.innerText = percent + '%';
                     }
                 }
 
-                if (count > 0) {
-                    await batch.commit();
-                }
-
-                statusDiv.classList.remove('animate-pulse', 'bg-blue-100', 'text-blue-700');
-                statusDiv.classList.add('bg-green-100', 'text-green-800');
-                statusDiv.innerHTML = `✅ اكتمل العمل بنجاح! تم حفظ <strong>${uniqueData.length}</strong> مادة بأمان في قاعدة بيانات ${year}. يمكنك الآن البحث عنها.`;
+                // رسالة النجاح
+                statusDiv.className = 'mt-8 p-6 rounded-xl border bg-green-50 border-green-200 block';
+                statusDiv.innerHTML = `<div class="font-bold text-green-800 text-lg">✅ اكتمل العمل بنجاح! تم حفظ <strong>${uniqueData.length}</strong> مادة في سنة ${year}.</div>`;
                 document.getElementById('fileInput').value = "";
             } catch (error) {
-                console.error("Firebase upload error:", error);
-                statusDiv.classList.remove('animate-pulse', 'bg-blue-100', 'text-blue-700');
-                statusDiv.classList.add('bg-red-100', 'text-red-700');
-                statusDiv.innerHTML = '<div style="direction:ltr; text-align:left;">❌ Error: ' + error.message + '</div>';
+                statusDiv.className = 'mt-8 p-6 rounded-xl border bg-red-50 border-red-200 block';
+                statusDiv.innerHTML = `<div class="font-bold text-red-700 text-lg" style="direction:ltr; text-align:left;">❌ Error: ${error.message}</div>`;
             }
         });
 
+        // 🔴 دالة الحذف مع شريط التقدم
         async function deleteYearData() {
             const year = document.getElementById('deleteYear').value;
             const confirmMsg = `⚠️ تحذير خطير ⚠️\n\nهل أنت متأكد أنك تريد حذف جميع البيانات المرفوعة لسنة ${year} بالكامل؟\n\nاضغط OK للحذف النهائي، أو Cancel للتراجع.`;
@@ -440,51 +427,67 @@
             if (!confirm(confirmMsg)) return;
 
             const statusDiv = document.getElementById('uploadStatus');
-            statusDiv.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-700', 'bg-blue-100', 'text-blue-700');
-            statusDiv.classList.add('bg-amber-100', 'text-amber-800', 'animate-pulse');
-            statusDiv.style.display = 'block';
-            statusDiv.innerHTML = `⏳ جاري مسح جميع بيانات سنة ${year}... يرجى الانتظار.`;
+            statusDiv.className = 'mt-8 p-6 rounded-xl border bg-amber-50 border-amber-200 block';
+            statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-lg">⏳ جاري فحص بيانات سنة ${year}...</div>`;
 
             try {
                 const collectionRef = db.collection("medical_data_" + year);
                 const snapshot = await collectionRef.get();
                 
                 if (snapshot.empty) {
-                    statusDiv.classList.remove('animate-pulse', 'bg-amber-100', 'text-amber-800');
-                    statusDiv.classList.add('bg-blue-100', 'text-blue-800');
-                    statusDiv.innerHTML = `ℹ️ لا توجد أي بيانات مسجلة لسنة ${year} ليتم حذفها.`;
+                    statusDiv.className = 'mt-8 p-6 rounded-xl border bg-blue-50 border-blue-200 block';
+                    statusDiv.innerHTML = `<div class="font-bold text-blue-800 text-lg">ℹ️ لا توجد أي بيانات مسجلة لسنة ${year} ليتم حذفها.</div>`;
                     return;
                 }
+
+                const totalItems = snapshot.size;
+
+                // إنشاء واجهة شريط التقدم للحذف
+                statusDiv.innerHTML = `
+                    <div class="font-bold text-red-800 text-lg mb-3">🗑️ جاري مسح البيانات (${year})</div>
+                    <div class="w-full bg-slate-200 rounded-full h-5 mb-2 overflow-hidden shadow-inner">
+                        <div id="deleteProgressBar" class="bg-red-500 h-5 rounded-full progress-bar-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between text-sm font-bold text-red-800">
+                        <span id="deleteProgressText">0 من ${totalItems} مادة</span>
+                        <span id="deleteProgressPercent">0%</span>
+                    </div>
+                `;
+
+                let progressBar = document.getElementById('deleteProgressBar');
+                let progressText = document.getElementById('deleteProgressText');
+                let progressPercent = document.getElementById('deleteProgressPercent');
 
                 let batch = db.batch();
                 let count = 0;
                 let totalDeleted = 0;
+                let docsArray = snapshot.docs;
 
-                for (const doc of snapshot.docs) {
-                    batch.delete(doc.ref);
+                for (let i = 0; i < docsArray.length; i++) {
+                    batch.delete(docsArray[i].ref);
                     count++;
                     totalDeleted++;
 
-                    if (count === 400) {
+                    // تحديث شريط التقدم للحذف
+                    if (count === 400 || i === docsArray.length - 1) {
                         await batch.commit();
                         batch = db.batch();
                         count = 0;
+
+                        let percent = Math.round((totalDeleted / totalItems) * 100);
+                        progressBar.style.width = percent + '%';
+                        progressText.innerText = `${totalDeleted} من ${totalItems} مادة`;
+                        progressPercent.innerText = percent + '%';
                     }
                 }
 
-                if (count > 0) {
-                    await batch.commit();
-                }
-
-                statusDiv.classList.remove('animate-pulse', 'bg-amber-100', 'text-amber-800');
-                statusDiv.classList.add('bg-green-100', 'text-green-800');
-                statusDiv.innerHTML = `✅ اكتملت العملية بنجاح! تم مسح <strong>${totalDeleted}</strong> مادة من بيانات سنة ${year}.`;
+                // رسالة النجاح
+                statusDiv.className = 'mt-8 p-6 rounded-xl border bg-green-50 border-green-200 block';
+                statusDiv.innerHTML = `<div class="font-bold text-green-800 text-lg">✅ اكتملت العملية بنجاح! تم مسح <strong>${totalDeleted}</strong> مادة من بيانات سنة ${year}.</div>`;
 
             } catch (error) {
-                console.error("Delete error:", error);
-                statusDiv.classList.remove('animate-pulse', 'bg-amber-100', 'text-amber-800');
-                statusDiv.classList.add('bg-red-100', 'text-red-700');
-                statusDiv.innerHTML = '<div style="direction:ltr; text-align:left;">❌ حدث خطأ أثناء الحذف: ' + error.message + '</div>';
+                statusDiv.className = 'mt-8 p-6 rounded-xl border bg-red-50 border-red-200 block';
+                statusDiv.innerHTML = `<div class="font-bold text-red-700 text-lg" style="direction:ltr; text-align:left;">❌ حدث خطأ أثناء الحذف: ${error.message}</div>`;
             }
         }
     </script>
