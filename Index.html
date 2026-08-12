@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>EstiNcode</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e40af">
+    
+    <!-- مكتبة Tailwind للتصميم الحديث والاحترافي -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- مكتبة SheetJS لقراءة ملفات الإكسل -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <!-- مكتبات Firebase (Compat version for simple HTML integration) -->
+    <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: #f8fafc; }
+        .tab-active { border-bottom: 3px solid #1e40af; color: #1e40af; font-weight: bold; }
+        .hidden-section { display: none !important; }
+        .modal-enter { animation: modalFadeIn 0.3s ease-out forwards; }
+        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95) translateY(-10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    </style>
+</head>
+<body class="text-slate-800 relative">
+
+    <!-- شريط التنقل العلوي -->
+    <nav class="bg-white shadow-sm mb-8 sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="flex flex-col sm:flex-row justify-between h-auto sm:h-16 items-center py-4 sm:py-0">
+                <h1 class="text-2xl font-bold text-blue-900 flex items-center gap-2 mb-4 sm:mb-0">
+                    <span>⚕️</span> EstiNcode System
+                </h1>
+                <div class="flex space-x-6 space-x-reverse text-lg">
+                    <button id="tab-search" class="px-2 py-2 tab-active transition" onclick="switchTab('search')">🔍 البحث المتقدم</button>
+                    <button id="tab-upload" class="px-2 py-2 text-slate-500 hover:text-blue-800 transition flex items-center gap-1" onclick="showAuthModal()">
+                        <span>🔒</span> إدارة البيانات
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-5xl mx-auto px-4 pb-12">
+        
+        <!-- قسم البحث وعرض النتائج -->
+        <section id="search-section" class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6">البحث في قاعدة البيانات السحابية</h2>
+            
+            <div class="flex flex-col md:flex-row gap-4 mb-8">
+                <select id="searchYear" class="p-4 border border-slate-300 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none md:w-1/4 text-lg font-semibold text-slate-700">
+                    <option value="2026">سنة 2026</option>
+                    <option value="2027">سنة 2027</option>
+                    <option value="2028">سنة 2028</option>
+                    <option value="2029">سنة 2029</option>
+                    <option value="2030">سنة 2030</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="اكتب اسم المادة أو الرمز الوطني للبحث..." class="p-4 border border-slate-300 rounded-xl w-full focus:ring-2 focus:ring-blue-500 outline-none text-lg" onkeypress="if(event.key === 'Enter') performSearch()">
+                <button onclick="performSearch()" class="bg-blue-800 hover:bg-blue-900 text-white px-8 py-4 rounded-xl font-bold text-lg transition shadow-md">بحث</button>
+            </div>
+
+            <div id="results" class="space-y-4">
+                <div class="text-center text-slate-400 py-12 text-lg">أدخل كلمة البحث واختر السنة لعرض النتائج...</div>
+            </div>
+        </section>
+
+        <!-- قسم أداة رفع واستخراج الإكسل (محمي) -->
+        <section id="upload-section" class="hidden-section bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold text-slate-800 mb-2 flex items-center gap-2"><span>🛡️</span> لوحة تحكم المسؤول</h2>
+            <p class="text-slate-500 mb-8 text-lg">حدد السنة، ثم قم باختيار ملفات الإكسل. سيقوم النظام باستخراج البيانات ورفعها مباشرة إلى قاعدة بيانات Firebase.</p>
+            
+            <div class="flex flex-col gap-3 mb-8 bg-blue-50 p-6 rounded-xl border border-blue-100">
+                <label class="font-bold text-blue-900 text-lg">1. حدد السنة المراد رفع بياناتها:</label>
+                <select id="uploadYear" class="p-4 border border-blue-200 rounded-xl bg-white outline-none w-full md:w-1/2 text-lg font-bold text-slate-700 focus:ring-2 focus:ring-blue-500">
+                    <option value="2026">سنة 2026</option>
+                    <option value="2027">سنة 2027</option>
+                    <option value="2028">سنة 2028</option>
+                    <option value="2029">سنة 2029</option>
+                    <option value="2030">سنة 2030</option>
+                </select>
+            </div>
+
+            <div class="border-2 border-dashed border-slate-300 rounded-2xl p-12 text-center bg-slate-50 hover:bg-blue-50 hover:border-blue-400 transition cursor-pointer" onclick="document.getElementById('fileInput').click()">
+                <div class="text-6xl mb-4">📊</div>
+                <div class="font-bold text-xl text-slate-700">2. اضغط هنا لاختيار ملفات الإكسل</div>
+                <div class="text-base text-slate-500 mt-2">يدعم اختيار ملفات متعددة معاً (.xlsx, .xls)</div>
+                <input type="file" id="fileInput" multiple accept=".xlsx, .xls" class="hidden">
+            </div>
+
+            <div id="uploadStatus" class="mt-8 hidden p-6 rounded-xl font-bold text-center text-lg"></div>
+        </section>
+
+    </div>
+
+    <!-- نافذة الرمز السري (Authentication Modal) -->
+    <div id="authModal" class="hidden-section fixed inset-0 bg-slate-900 bg-opacity-70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md modal-enter relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-2xl font-bold">&times;</button>
+            <div class="text-center mb-6">
+                <div class="text-5xl mb-4">🔒</div>
+                <h3 class="text-2xl font-bold text-slate-800">صلاحية المسؤول</h3>
+                <p class="text-slate-500 mt-2">يرجى إدخال الرمز السري للوصول إلى لوحة رفع البيانات.</p>
+            </div>
+            <input type="password" id="pinInput" placeholder="الرمز السري..." class="w-full p-4 border-2 border-slate-200 rounded-xl text-center text-2xl tracking-[0.5em] focus:border-blue-500 outline-none mb-4 font-bold text-slate-700" onkeypress="if(event.key === 'Enter') verifyPin()">
+            <p id="pinError" class="text-red-500 text-center font-semibold mb-4 hidden-section">الرمز غير صحيح، حاول مرة أخرى!</p>
+            <button onclick="verifyPin()" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-4 rounded-xl transition text-lg">تحقق ودخول</button>
+        </div>
+    </div>
+
+    <!-- نافذة التثبيت الذكية (Install App Modal) -->
+    <div id="installModal" class="hidden-section fixed inset-0 bg-slate-900 bg-opacity-70 z-50 flex items-end sm:items-center justify-center pb-4 sm:p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm modal-enter border-t-4 border-blue-800 text-center relative">
+            <button onclick="closeInstallModal()" class="absolute top-3 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+            <img src="./icon.png" class="w-20 h-20 mx-auto mb-4 drop-shadow-md rounded-2xl border border-slate-100">
+            <h3 class="text-xl font-bold text-slate-800 mb-2">تثبيت تطبيق EstiNcode</h3>
+            <p class="text-slate-500 mb-6 text-sm">قم بتثبيت التطبيق على جهازك للوصول السريع والعمل بدون إنترنت.</p>
+            <div id="installInstructions"></div>
+            <button onclick="closeInstallModal()" class="mt-4 text-slate-400 text-sm hover:text-slate-600 underline">ليس الآن</button>
+        </div>
+    </div>
+
+    <script>
+        // إعدادات Firebase الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyC8bp1Jt17QwHRkA97XWX3mBwvAvtjmKzY",
+            authDomain: "national-code-guide.firebaseapp.com",
+            projectId: "national-code-guide",
+            storageBucket: "national-code-guide.firebasestorage.app",
+            messagingSenderId: "512332654574",
+            appId: "1:512332654574:web:271bf30a84af8fc66d10ff",
+            measurementId: "G-7WJZH972EF"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // تفعيل ملف الخدمة (PWA)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+
+        // نظام التثبيت التلقائي (PWA Auto-Install)
+        let deferredPrompt;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+        if (!isStandalone) {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            
+            if (isIOS) {
+                setTimeout(() => {
+                    document.getElementById('installInstructions').innerHTML = `
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-right text-sm">
+                            1. اضغط على أيقونة المشاركة <b><svg class="inline w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg></b> بالأسفل.<br>
+                            2. اختر <b>"إضافة إلى الصفحة الرئيسية"</b> <br>(Add to Home Screen).
+                        </div>
+                    `;
+                    document.getElementById('installModal').classList.remove('hidden-section');
+                }, 2000);
+            } else {
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    document.getElementById('installInstructions').innerHTML = `
+                        <button onclick="triggerInstall()" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 rounded-xl transition text-lg shadow-md">
+                            ⬇️ تثبيت التطبيق الآن
+                        </button>
+                    `;
+                    setTimeout(() => {
+                        document.getElementById('installModal').classList.remove('hidden-section');
+                    }, 2000);
+                });
+            }
+        }
+
+        function triggerInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') closeInstallModal();
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        function closeInstallModal() {
+            document.getElementById('installModal').classList.add('hidden-section');
+        }
+
+        // نظام الحماية (Security PIN)
+        const SYSTEM_PIN = "2026"; 
+
+        function switchTab(tab) {
+            document.getElementById('search-section').classList.add('hidden-section');
+            document.getElementById('upload-section').classList.add('hidden-section');
+            document.getElementById('tab-search').classList.remove('tab-active', 'text-slate-500');
+            document.getElementById('tab-upload').classList.remove('tab-active', 'text-slate-500');
+
+            if(tab === 'search') {
+                document.getElementById('search-section').classList.remove('hidden-section');
+                document.getElementById('tab-search').classList.add('tab-active');
+                document.getElementById('tab-upload').classList.add('text-slate-500');
+            } else {
+                document.getElementById('upload-section').classList.remove('hidden-section');
+                document.getElementById('tab-upload').classList.add('tab-active');
+                document.getElementById('tab-search').classList.add('text-slate-500');
+            }
+        }
+
+        function showAuthModal() {
+            document.getElementById('authModal').classList.remove('hidden-section');
+            document.getElementById('pinInput').value = '';
+            document.getElementById('pinError').classList.add('hidden-section');
+            setTimeout(() => document.getElementById('pinInput').focus(), 100);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden-section');
+        }
+
+        function verifyPin() {
+            const input = document.getElementById('pinInput').value;
+            if (input === SYSTEM_PIN) {
+                closeAuthModal();
+                switchTab('upload');
+            } else {
+                document.getElementById('pinError').classList.remove('hidden-section');
+                document.getElementById('pinInput').value = '';
+            }
+        }
+
+        // دالة البحث في Firebase
+        async function performSearch() {
+            const queryText = document.getElementById('searchInput').value.trim().toLowerCase();
+            const year = document.getElementById('searchYear').value;
+            const resultsDiv = document.getElementById('results');
+            
+            if(queryText.length < 2) {
+                resultsDiv.innerHTML = '<div class="text-center text-slate-500 font-semibold py-8 text-lg">يرجى كتابة حرفين على الأقل للبحث.</div>';
+                return;
+            }
+
+            resultsDiv.innerHTML = '<div class="text-center text-blue-600 font-bold py-12 text-xl animate-pulse">⏳ جاري البحث في قاعدة البيانات...</div>';
+
+            try {
+                const snapshot = await db.collection("medical_data_" + year).get();
+                let resultsHTML = '';
+                let count = 0;
+
+                snapshot.forEach(doc => {
+                    const item = doc.data();
+                    const itemName = item.name ? item.name.toLowerCase() : "";
+                    const itemCode = item.code ? item.code.toLowerCase() : "";
+
+                    if(itemName.includes(queryText) || itemCode.includes(queryText)) {
+                        let annualNeed = parseFloat(item.need) || 0;
+                        let monthlyNeed = (annualNeed / 12).toFixed(1);
+                        if(monthlyNeed.endsWith('.0')) monthlyNeed = monthlyNeed.slice(0, -2);
+
+                        resultsHTML += `
+                            <div class="p-6 border border-slate-200 rounded-2xl hover:shadow-lg transition bg-white flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                                <div class="flex-1">
+                                    <div class="text-blue-800 font-black text-xl ltr inline-block bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">${item.code}</div>
+                                    <div class="text-slate-700 mt-3 font-semibold text-lg leading-relaxed">${item.name}</div>
+                                </div>
+                                <div class="flex flex-row gap-3 w-full lg:w-auto">
+                                    <div class="bg-green-50 border border-green-200 text-green-700 px-5 py-3 rounded-xl text-center flex-1 lg:w-32 shadow-sm">
+                                        <div class="text-xs font-bold text-green-600 mb-1 uppercase tracking-wider">الاحتياج السنوي</div>
+                                        <div class="font-black text-2xl">${annualNeed}</div>
+                                    </div>
+                                    <div class="bg-amber-50 border border-amber-200 text-amber-700 px-5 py-3 rounded-xl text-center flex-1 lg:w-32 shadow-sm">
+                                        <div class="text-xs font-bold text-amber-600 mb-1 uppercase tracking-wider">الاحتياج الشهري</div>
+                                        <div class="font-black text-2xl">${monthlyNeed}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        count++;
+                    }
+                });
+
+                if(count === 0) {
+                    resultsDiv.innerHTML = `<div class="text-center text-slate-500 font-semibold py-12 text-xl">لا توجد نتائج مطابقة لـ "${queryText}" في سنة ${year}</div>`;
+                } else {
+                    resultsDiv.innerHTML = `<div class="text-slate-500 font-semibold mb-4">تم العثور على ${count} نتيجة:</div>` + resultsHTML;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                resultsDiv.innerHTML = '<div class="text-center text-red-500 font-bold py-12 text-xl">❌ حدث خطأ في الاتصال بقاعدة البيانات. تأكد من تفعيل (Test Mode) في إعدادات Firestore.</div>';
+            }
+        }
+
+        // دالة استخراج ورفع الإكسل
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
+            const files = e.target.files;
+            if(files.length === 0) return;
+            
+            const year = document.getElementById('uploadYear').value;
+            const statusDiv = document.getElementById('uploadStatus');
+            statusDiv.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700');
+            statusDiv.classList.add('bg-blue-100', 'text-blue-700', 'animate-pulse');
+            statusDiv.innerHTML = `⏳ جاري قراءة الملفات واستخراج البيانات لعام ${year}... يرجى الانتظار.`;
+            
+            let finalData = [];
+
+            for(let i=0; i<files.length; i++) {
+                try {
+                    const data = await files[i].arrayBuffer();
+                    const workbook = XLSX.read(data);
+                    
+                    workbook.SheetNames.forEach(sheetName => {
+                        const sheet = workbook.Sheets[sheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(sheet, {header: 1});
+
+                        let codeCol = -1, nameCol = -1, needCol = -1, headerRowIndex = -1;
+
+                        for(let rowIdx = 0; rowIdx < Math.min(15, jsonData.length); rowIdx++) {
+                            const row = jsonData[rowIdx];
+                            if (!row) continue;
+                            for(let colIdx = 0; colIdx < row.length; colIdx++) {
+                                const cellValue = String(row[colIdx] || '').toLowerCase().trim();
+                                if(cellValue.includes('code') || cellValue.includes('رمز') || cellValue.includes('نبيذة')) codeCol = colIdx;
+                                if(cellValue.includes('item') || cellValue.includes('مادة') || cellValue.includes('name') || cellValue.includes('اسم')) nameCol = colIdx;
+                                if((cellValue.includes('احتياج') || cellValue.includes('need') || cellValue.includes('تقدير')) && cellValue.includes(year)) needCol = colIdx;
+                            }
+                            if (codeCol !== -1 && nameCol !== -1) {
+                                headerRowIndex = rowIdx;
+                                break;
+                            }
+                        }
+
+                        const codeRegex = /[A-Z]{2,6}-[A-Z0-9]{2,5}-\d{1,5}/i;
+
+                        jsonData.forEach((row, rowIdx) => {
+                            if (rowIdx <= headerRowIndex) return; 
+                            
+                            let code = "", name = "", need = "0";
+
+                            if (codeCol !== -1 && nameCol !== -1) {
+                                code = String(row[codeCol] || '').trim();
+                                name = String(row[nameCol] || '').trim();
+                                if(needCol !== -1 && row[needCol] !== undefined) {
+                                    need = String(row[needCol]).trim();
+                                }
+                            } else {
+                                for(let j=0; j<row.length; j++) {
+                                    if(typeof row[j] === 'string' && codeRegex.test(row[j].trim())) {
+                                        code = row[j].trim();
+                                        if(j + 1 < row.length && row[j+1]) name = String(row[j+1]).trim();
+                                        for(let k=row.length-1; k>j; k--) {
+                                            if(!isNaN(row[k]) && String(row[k]).trim() !== "") {
+                                                need = String(row[k]).trim();
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if(need === "" || isNaN(need)) need = "0";
+                            if(code && name && name.length > 2 && code.toLowerCase() !== "code") {
+                                finalData.push({ code: code, name: name, need: need });
+                            }
+                        });
+                    });
+                } catch (err) {
+                    console.error("Error reading file:", err);
+                }
+            }
+
+            const uniqueData = Array.from(new Set(finalData.map(a => a.code))).map(code => finalData.find(a => a.code === code));
+
+            if(uniqueData.length === 0) {
+                statusDiv.classList.remove('animate-pulse', 'bg-blue-100', 'text-blue-700');
+                statusDiv.classList.add('bg-red-100', 'text-red-700');
+                statusDiv.innerHTML = '⚠️ لم يتم العثور على أي بيانات صحيحة في الملفات المرفوعة.';
+                return;
+            }
+
+            statusDiv.innerHTML = `☁️ جاري رفع ${uniqueData.length} مادة إلى قاعدة البيانات السحابية (Firebase)... يرجى عدم إغلاق الصفحة.`;
+
+            try {
+                const collectionRef = db.collection("medical_data_" + year);
+                let batch = db.batch();
+                let count = 0;
+
+                for (let i = 0; i < uniqueData.length; i++) {
+                    const docRef = collectionRef.doc(uniqueData[i].code);
+                    batch.set(docRef, uniqueData[i]);
+                    count++;
+
+                    if (count === 400 || i === uniqueData.length - 1) {
+                        await batch.commit();
+                        batch = db.batch();
+                        count = 0;
+                    }
+                }
+
+                statusDiv.classList.remove('animate-pulse', 'bg-blue-100', 'text-blue-700');
+                statusDiv.classList.add('bg-green-100', 'text-green-800');
+                statusDiv.innerHTML = `✅ اكتمل العمل بنجاح! تم حفظ <strong>${uniqueData.length}</strong> مادة بأمان في قاعدة بيانات ${year}. يمكنك الآن البحث عنها.`;
+                document.getElementById('fileInput').value = "";
+            } catch (error) {
+                console.error("Firebase upload error:", error);
+                statusDiv.classList.remove('animate-pulse', 'bg-blue-100', 'text-blue-700');
+                statusDiv.classList.add('bg-red-100', 'text-red-700');
+                statusDiv.innerHTML = '❌ حدث خطأ أثناء الرفع إلى قاعدة البيانات. تأكد من إعدادات Firestore.';
+            }
+        });
+    </script>
+</body>
+</html>
