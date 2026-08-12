@@ -18,7 +18,6 @@
         .hidden-section { display: none !important; }
         .modal-enter { animation: modalFadeIn 0.3s ease-out forwards; }
         @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95) translateY(-10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        /* أنيميشن ناعم لشريط التقدم */
         .progress-bar-fill { transition: width 0.4s ease-out; }
     </style>
 </head>
@@ -41,7 +40,6 @@
     </nav>
 
     <div class="max-w-5xl mx-auto px-4 pb-12">
-        <!-- قسم البحث -->
         <section id="search-section" class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
             <h2 class="text-2xl font-bold text-slate-800 mb-6">البحث في قاعدة البيانات السحابية</h2>
             
@@ -55,12 +53,10 @@
             </div>
         </section>
 
-        <!-- لوحة تحكم المسؤول (رفع + حذف) -->
         <section id="upload-section" class="hidden-section bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
             <h2 class="text-2xl font-bold text-slate-800 mb-2 flex items-center gap-2"><span>🛡️</span> لوحة تحكم المسؤول</h2>
             <p class="text-slate-500 mb-8 text-lg">يمكنك من هنا إضافة بيانات جديدة من ملفات الإكسل، أو مسح بيانات سابقة.</p>
             
-            <!-- أداة الرفع -->
             <div class="flex flex-col gap-3 mb-6 bg-blue-50 p-6 rounded-xl border border-blue-100">
                 <label class="font-bold text-blue-900 text-lg">1. رفع بيانات جديدة:</label>
                 <select id="uploadYear" class="p-4 border border-blue-200 rounded-xl bg-white outline-none w-full md:w-1/2 text-lg font-bold text-slate-700 focus:ring-2 focus:ring-blue-500"></select>
@@ -73,7 +69,6 @@
                 <input type="file" id="fileInput" multiple accept=".xlsx, .xls" class="hidden">
             </div>
 
-            <!-- أداة الحذف (منطقة الخطر) -->
             <div class="mt-10 bg-red-50 p-6 rounded-xl border border-red-200">
                 <h3 class="font-bold text-red-800 text-lg mb-2 flex items-center gap-2"><span>⚠️</span> منطقة الخطر (حذف البيانات)</h3>
                 <p class="text-slate-600 mb-4 text-sm">قم بمسح قاعدة بيانات سنة معينة بالكامل (تنبيه: لا يمكن التراجع عن هذه الخطوة).</p>
@@ -85,12 +80,10 @@
                 </div>
             </div>
 
-            <!-- شاشة حالة الرفع/الحذف (مع شريط التقدم) -->
             <div id="uploadStatus" class="mt-8 hidden p-6 rounded-xl text-center text-lg shadow-sm border"></div>
         </section>
     </div>
 
-    <!-- نوافذ الحماية والتثبيت -->
     <div id="authModal" class="hidden-section fixed inset-0 bg-slate-900 bg-opacity-70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md modal-enter relative">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-2xl font-bold">&times;</button>
@@ -129,7 +122,13 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // دالة توليد السنوات
+        // 🔴 متغير عام للتحكم في إلغاء العملية
+        let isOperationCancelled = false;
+
+        function cancelOperation() {
+            isOperationCancelled = true;
+        }
+
         function generateYears() {
             const selects = ['searchYear', 'uploadYear', 'deleteYear'];
             const startYear = 2000;
@@ -291,7 +290,6 @@
             }
         }
 
-        // 🔴 دالة الرفع مع شريط التقدم
         document.getElementById('fileInput').addEventListener('change', async (e) => {
             const files = e.target.files;
             if(files.length === 0) return;
@@ -299,7 +297,8 @@
             const year = document.getElementById('uploadYear').value;
             const statusDiv = document.getElementById('uploadStatus');
             
-            // تهيئة واجهة الرفع
+            isOperationCancelled = false; // تصفير زر الإلغاء قبل البدء
+
             statusDiv.className = 'mt-8 p-6 rounded-xl border bg-blue-50 border-blue-200 block';
             statusDiv.innerHTML = `<div class="font-bold text-blue-800 text-lg mb-2">⏳ جاري قراءة الملفات واستخراج البيانات لعام ${year}...</div>`;
             
@@ -367,9 +366,12 @@
                 return;
             }
 
-            // إنشاء واجهة شريط التقدم للرفع
+            // واجهة الرفع مع زر الإلغاء
             statusDiv.innerHTML = `
-                <div class="font-bold text-blue-900 text-lg mb-3">☁️ جاري الرفع إلى قاعدة البيانات (${year})</div>
+                <div class="flex justify-between items-center mb-3">
+                    <div class="font-bold text-blue-900 text-lg">☁️ جاري الرفع (${year})</div>
+                    <button onclick="cancelOperation()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition">إلغاء 🛑</button>
+                </div>
                 <div class="w-full bg-slate-200 rounded-full h-5 mb-2 overflow-hidden shadow-inner">
                     <div id="uploadProgressBar" class="bg-blue-600 h-5 rounded-full progress-bar-fill" style="width: 0%"></div>
                 </div>
@@ -387,29 +389,34 @@
                 const collectionRef = db.collection("medical_data_" + year);
                 let batch = db.batch();
                 let count = 0;
-                let totalUploaded = 0;
+                let totalCommitted = 0; // لحساب ما تم رفعه فعلياً
 
                 for (let i = 0; i < uniqueData.length; i++) {
+                    // التحقق من طلب الإلغاء
+                    if (isOperationCancelled) {
+                        statusDiv.className = 'mt-8 p-6 rounded-xl border bg-amber-50 border-amber-200 block';
+                        statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-lg">⚠️ تم إيقاف الرفع بناءً على طلبك! تم حفظ ${totalCommitted} مادة فقط.</div>`;
+                        document.getElementById('fileInput').value = "";
+                        return; // الخروج من العملية فوراً
+                    }
+
                     const docRef = collectionRef.doc(uniqueData[i].code);
                     batch.set(docRef, uniqueData[i]);
                     count++;
-                    totalUploaded++;
 
-                    // تحديث شريط التقدم كلما أرسلنا حزمة (400) أو انتهينا
                     if (count === 400 || i === uniqueData.length - 1) {
                         await batch.commit();
+                        totalCommitted += count;
                         batch = db.batch();
                         count = 0;
                         
-                        // حساب النسبة المئوية وتحديث الواجهة
-                        let percent = Math.round((totalUploaded / uniqueData.length) * 100);
+                        let percent = Math.round((totalCommitted / uniqueData.length) * 100);
                         progressBar.style.width = percent + '%';
-                        progressText.innerText = `${totalUploaded} من ${uniqueData.length} مادة`;
+                        progressText.innerText = `${totalCommitted} من ${uniqueData.length} مادة`;
                         progressPercent.innerText = percent + '%';
                     }
                 }
 
-                // رسالة النجاح
                 statusDiv.className = 'mt-8 p-6 rounded-xl border bg-green-50 border-green-200 block';
                 statusDiv.innerHTML = `<div class="font-bold text-green-800 text-lg">✅ اكتمل العمل بنجاح! تم حفظ <strong>${uniqueData.length}</strong> مادة في سنة ${year}.</div>`;
                 document.getElementById('fileInput').value = "";
@@ -419,7 +426,6 @@
             }
         });
 
-        // 🔴 دالة الحذف مع شريط التقدم
         async function deleteYearData() {
             const year = document.getElementById('deleteYear').value;
             const confirmMsg = `⚠️ تحذير خطير ⚠️\n\nهل أنت متأكد أنك تريد حذف جميع البيانات المرفوعة لسنة ${year} بالكامل؟\n\nاضغط OK للحذف النهائي، أو Cancel للتراجع.`;
@@ -427,6 +433,8 @@
             if (!confirm(confirmMsg)) return;
 
             const statusDiv = document.getElementById('uploadStatus');
+            isOperationCancelled = false; // تصفير زر الإلغاء
+
             statusDiv.className = 'mt-8 p-6 rounded-xl border bg-amber-50 border-amber-200 block';
             statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-lg">⏳ جاري فحص بيانات سنة ${year}...</div>`;
 
@@ -442,9 +450,12 @@
 
                 const totalItems = snapshot.size;
 
-                // إنشاء واجهة شريط التقدم للحذف
+                // واجهة الحذف مع زر الإلغاء
                 statusDiv.innerHTML = `
-                    <div class="font-bold text-red-800 text-lg mb-3">🗑️ جاري مسح البيانات (${year})</div>
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="font-bold text-red-800 text-lg">🗑️ جاري مسح البيانات (${year})</div>
+                        <button onclick="cancelOperation()" class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition">إيقاف الحذف 🛑</button>
+                    </div>
                     <div class="w-full bg-slate-200 rounded-full h-5 mb-2 overflow-hidden shadow-inner">
                         <div id="deleteProgressBar" class="bg-red-500 h-5 rounded-full progress-bar-fill" style="width: 0%"></div>
                     </div>
@@ -460,30 +471,35 @@
 
                 let batch = db.batch();
                 let count = 0;
-                let totalDeleted = 0;
+                let totalCommitted = 0;
                 let docsArray = snapshot.docs;
 
                 for (let i = 0; i < docsArray.length; i++) {
+                    // التحقق من طلب الإلغاء
+                    if (isOperationCancelled) {
+                        statusDiv.className = 'mt-8 p-6 rounded-xl border bg-amber-50 border-amber-200 block';
+                        statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-lg">⚠️ تم إيقاف عملية الحذف! تم مسح ${totalCommitted} مادة فقط.</div>`;
+                        return; // الخروج فوراً
+                    }
+
                     batch.delete(docsArray[i].ref);
                     count++;
-                    totalDeleted++;
 
-                    // تحديث شريط التقدم للحذف
                     if (count === 400 || i === docsArray.length - 1) {
                         await batch.commit();
+                        totalCommitted += count;
                         batch = db.batch();
                         count = 0;
 
-                        let percent = Math.round((totalDeleted / totalItems) * 100);
+                        let percent = Math.round((totalCommitted / totalItems) * 100);
                         progressBar.style.width = percent + '%';
-                        progressText.innerText = `${totalDeleted} من ${totalItems} مادة`;
+                        progressText.innerText = `${totalCommitted} من ${totalItems} مادة`;
                         progressPercent.innerText = percent + '%';
                     }
                 }
 
-                // رسالة النجاح
                 statusDiv.className = 'mt-8 p-6 rounded-xl border bg-green-50 border-green-200 block';
-                statusDiv.innerHTML = `<div class="font-bold text-green-800 text-lg">✅ اكتملت العملية بنجاح! تم مسح <strong>${totalDeleted}</strong> مادة من بيانات سنة ${year}.</div>`;
+                statusDiv.innerHTML = `<div class="font-bold text-green-800 text-lg">✅ اكتملت العملية بنجاح! تم مسح <strong>${totalCommitted}</strong> مادة من بيانات سنة ${year}.</div>`;
 
             } catch (error) {
                 statusDiv.className = 'mt-8 p-6 rounded-xl border bg-red-50 border-red-200 block';
