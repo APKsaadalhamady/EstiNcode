@@ -39,6 +39,7 @@
     </nav>
 
     <div class="max-w-5xl mx-auto px-4 pb-12">
+        <!-- قسم البحث -->
         <section id="search-section" class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
             <h2 class="text-2xl font-bold text-slate-800 mb-6">البحث في قاعدة البيانات السحابية</h2>
             
@@ -58,12 +59,14 @@
             </div>
         </section>
 
+        <!-- لوحة تحكم المسؤول (رفع + حذف) -->
         <section id="upload-section" class="hidden-section bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
             <h2 class="text-2xl font-bold text-slate-800 mb-2 flex items-center gap-2"><span>🛡️</span> لوحة تحكم المسؤول</h2>
-            <p class="text-slate-500 mb-8 text-lg">حدد السنة، ثم قم باختيار ملفات الإكسل. سيقوم النظام باستخراج البيانات ورفعها مباشرة إلى قاعدة بيانات Firebase.</p>
+            <p class="text-slate-500 mb-8 text-lg">يمكنك من هنا إضافة بيانات جديدة من ملفات الإكسل، أو مسح بيانات سابقة.</p>
             
-            <div class="flex flex-col gap-3 mb-8 bg-blue-50 p-6 rounded-xl border border-blue-100">
-                <label class="font-bold text-blue-900 text-lg">1. حدد السنة المراد رفع بياناتها:</label>
+            <!-- أداة الرفع -->
+            <div class="flex flex-col gap-3 mb-6 bg-blue-50 p-6 rounded-xl border border-blue-100">
+                <label class="font-bold text-blue-900 text-lg">1. رفع بيانات جديدة:</label>
                 <select id="uploadYear" class="p-4 border border-blue-200 rounded-xl bg-white outline-none w-full md:w-1/2 text-lg font-bold text-slate-700 focus:ring-2 focus:ring-blue-500">
                     <option value="2026">سنة 2026</option>
                     <option value="2027">سنة 2027</option>
@@ -75,21 +78,42 @@
 
             <div class="border-2 border-dashed border-slate-300 rounded-2xl p-12 text-center bg-slate-50 hover:bg-blue-50 hover:border-blue-400 transition cursor-pointer" onclick="document.getElementById('fileInput').click()">
                 <div class="text-6xl mb-4">📊</div>
-                <div class="font-bold text-xl text-slate-700">2. اضغط هنا لاختيار ملفات الإكسل</div>
+                <div class="font-bold text-xl text-slate-700">اضغط هنا لاختيار ملفات الإكسل للرفع</div>
                 <div class="text-base text-slate-500 mt-2">يدعم اختيار ملفات متعددة معاً (.xlsx, .xls)</div>
                 <input type="file" id="fileInput" multiple accept=".xlsx, .xls" class="hidden">
             </div>
+
+            <!-- أداة الحذف الجديدة (منطقة الخطر) -->
+            <div class="mt-10 bg-red-50 p-6 rounded-xl border border-red-200">
+                <h3 class="font-bold text-red-800 text-lg mb-2 flex items-center gap-2"><span>⚠️</span> منطقة الخطر (حذف البيانات)</h3>
+                <p class="text-slate-600 mb-4 text-sm">قم بمسح قاعدة بيانات سنة معينة بالكامل (تنبيه: لا يمكن التراجع عن هذه الخطوة).</p>
+                <div class="flex flex-col sm:flex-row gap-4 items-center">
+                    <select id="deleteYear" class="p-4 border border-red-300 rounded-xl bg-white outline-none w-full sm:w-1/2 text-lg font-bold text-slate-700 focus:ring-2 focus:ring-red-500">
+                        <option value="2026">سنة 2026</option>
+                        <option value="2027">سنة 2027</option>
+                        <option value="2028">سنة 2028</option>
+                        <option value="2029">سنة 2029</option>
+                        <option value="2030">سنة 2030</option>
+                    </select>
+                    <button onclick="deleteYearData()" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-xl font-bold transition shadow-md flex items-center justify-center gap-2 text-lg">
+                        <span>🗑️</span> مسح البيانات
+                    </button>
+                </div>
+            </div>
+
+            <!-- شاشة حالة الرفع/الحذف -->
             <div id="uploadStatus" class="mt-8 hidden p-6 rounded-xl font-bold text-center text-lg"></div>
         </section>
     </div>
 
+    <!-- نوافذ الحماية والتثبيت -->
     <div id="authModal" class="hidden-section fixed inset-0 bg-slate-900 bg-opacity-70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md modal-enter relative">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-2xl font-bold">&times;</button>
             <div class="text-center mb-6">
                 <div class="text-5xl mb-4">🔒</div>
                 <h3 class="text-2xl font-bold text-slate-800">صلاحية المسؤول</h3>
-                <p class="text-slate-500 mt-2">يرجى إدخال الرمز السري للوصول إلى لوحة رفع البيانات.</p>
+                <p class="text-slate-500 mt-2">يرجى إدخال الرمز السري للوصول إلى لوحة الإدارة.</p>
             </div>
             <input type="password" id="pinInput" placeholder="الرمز السري..." class="w-full p-4 border-2 border-slate-200 rounded-xl text-center text-2xl tracking-[0.5em] focus:border-blue-500 outline-none mb-4 font-bold text-slate-700" onkeypress="if(event.key === 'Enter') verifyPin()">
             <p id="pinError" class="text-red-500 text-center font-semibold mb-4 hidden-section">الرمز غير صحيح، حاول مرة أخرى!</p>
@@ -277,8 +301,9 @@
             
             const year = document.getElementById('uploadYear').value;
             const statusDiv = document.getElementById('uploadStatus');
-            statusDiv.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700');
+            statusDiv.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700', 'bg-amber-100', 'text-amber-800');
             statusDiv.classList.add('bg-blue-100', 'text-blue-700', 'animate-pulse');
+            statusDiv.style.display = 'block';
             statusDiv.innerHTML = `⏳ جاري قراءة الملفات واستخراج البيانات لعام ${year}... يرجى الانتظار.`;
             
             let finalData = [];
@@ -340,7 +365,6 @@
 
                             if(need === "" || isNaN(need)) need = "0";
                             if(code && name && name.length > 2 && code.toLowerCase() !== "code") {
-                                // 🔴 التعديل الجوهري هنا: تنظيف الكود ومنع الرموز الطويلة جداً
                                 let safeCode = String(code).replace(/[\/\\]/g, '-').trim();
                                 if (safeCode.length < 50) { 
                                     finalData.push({ code: safeCode, name: name, need: need });
@@ -392,6 +416,64 @@
                 statusDiv.innerHTML = '<div style="direction:ltr; text-align:left;">❌ Error: ' + error.message + '</div>';
             }
         });
+
+        // 🔴 الدالة الجديدة: مسح بيانات السنة بالكامل
+        async function deleteYearData() {
+            const year = document.getElementById('deleteYear').value;
+            const confirmMsg = `⚠️ تحذير خطير ⚠️\n\nهل أنت متأكد أنك تريد حذف جميع البيانات المرفوعة لسنة ${year} بالكامل؟\n\nاضغط OK للحذف النهائي، أو Cancel للتراجع.`;
+            
+            if (!confirm(confirmMsg)) return;
+
+            const statusDiv = document.getElementById('uploadStatus');
+            statusDiv.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-700', 'bg-blue-100', 'text-blue-700');
+            statusDiv.classList.add('bg-amber-100', 'text-amber-800', 'animate-pulse');
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = `⏳ جاري مسح جميع بيانات سنة ${year}... يرجى الانتظار.`;
+
+            try {
+                const collectionRef = db.collection("medical_data_" + year);
+                const snapshot = await collectionRef.get();
+                
+                if (snapshot.empty) {
+                    statusDiv.classList.remove('animate-pulse', 'bg-amber-100', 'text-amber-800');
+                    statusDiv.classList.add('bg-blue-100', 'text-blue-800');
+                    statusDiv.innerHTML = `ℹ️ لا توجد أي بيانات مسجلة لسنة ${year} ليتم حذفها.`;
+                    return;
+                }
+
+                let batch = db.batch();
+                let count = 0;
+                let totalDeleted = 0;
+
+                for (const doc of snapshot.docs) {
+                    batch.delete(doc.ref);
+                    count++;
+                    totalDeleted++;
+
+                    // الإرسال في حزم من 400 ملف لتسريع العملية ومنع الأخطاء
+                    if (count === 400) {
+                        await batch.commit();
+                        batch = db.batch();
+                        count = 0;
+                    }
+                }
+
+                // رفع المتبقي
+                if (count > 0) {
+                    await batch.commit();
+                }
+
+                statusDiv.classList.remove('animate-pulse', 'bg-amber-100', 'text-amber-800');
+                statusDiv.classList.add('bg-green-100', 'text-green-800');
+                statusDiv.innerHTML = `✅ اكتملت العملية بنجاح! تم مسح <strong>${totalDeleted}</strong> مادة من بيانات سنة ${year}.`;
+
+            } catch (error) {
+                console.error("Delete error:", error);
+                statusDiv.classList.remove('animate-pulse', 'bg-amber-100', 'text-amber-800');
+                statusDiv.classList.add('bg-red-100', 'text-red-700');
+                statusDiv.innerHTML = '<div style="direction:ltr; text-align:left;">❌ حدث خطأ أثناء الحذف: ' + error.message + '</div>';
+            }
+        }
     </script>
 </body>
 </html>
