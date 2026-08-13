@@ -11,6 +11,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- منع تخزين المتصفح للكاش القديم -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-app-compat.js"></script>
@@ -30,6 +35,7 @@
     <style>
         body { background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
         .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(20, 184, 166, 0.15); }
+        .glass-footer { background: linear-gradient(180deg, rgba(248, 250, 252, 0) 0%, rgba(226, 232, 240, 0.5) 100%); }
         .tab-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .tab-active { background-color: #ffffff; color: #0f766e; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); font-weight: 700; }
         .hidden-section { display: none !important; }
@@ -63,7 +69,6 @@
                         <p class="text-[10px] sm:text-xs font-semibold text-medical-600">النظام المركزي لتقدير الاحتياج</p>
                     </div>
                 </div>
-                <!-- زر حول التطبيق الجديد -->
                 <button onclick="showAboutModal()" class="p-2 bg-slate-100 hover:bg-medical-50 text-slate-500 hover:text-medical-600 rounded-full transition-colors">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </button>
@@ -172,7 +177,7 @@
             <div id="uploadStatus" class="mt-6 sm:mt-8 hidden p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border shadow-sm"></div>
         </section>
 
-        <!-- لوحة الإدارة العليا (Super Admin) الجديدة -->
+        <!-- لوحة الإدارة العليا (Super Admin) -->
         <section id="super-admin-section" class="hidden-section fade-in">
             <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-5 sm:mb-6 px-1 gap-3 sm:gap-4">
                 <div class="flex items-center gap-3">
@@ -186,7 +191,6 @@
 
             <div class="bg-white p-5 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
                 <h3 class="font-bold text-slate-800 text-base sm:text-lg mb-4 flex items-center gap-2"><svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg> صندوق الوارد للمستشفيات</h3>
-                <!-- قائمة المحادثات النشطة -->
                 <div id="adminChatsList" class="space-y-3">
                     <div class="text-center text-slate-400 font-semibold py-10 animate-pulse text-sm">جاري جلب الرسائل من السحابة...</div>
                 </div>
@@ -212,7 +216,7 @@
             <div class="w-16 h-16 bg-medical-50 rounded-full flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-medical-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
             <h3 class="text-xl sm:text-2xl font-bold text-slate-800 mb-2">حول النظام</h3>
             <p class="text-slate-500 font-semibold mb-6 text-xs sm:text-sm leading-relaxed border-b border-slate-100 pb-6">
-                <strong class="text-medical-600">EstiNcode Cloud</strong> هو نظام سحابي متكامل ومستقل يهدف إلى رقمنة وأتمتة عملية تقدير الاحتياج الدوائي للمؤسسات الصحية في دائرة صحة البصرة. يضمن النظام سرعة الوصول للمعلومات، مع الحفاظ على استقلالية وأمان بيانات كل مستشفى.
+                <strong class="text-medical-600">EstiNcode Cloud</strong> هو نظام سحابي متكامل ومستقل يهدف إلى رقمنة وأتمتة عملية تقدير الاحتياج الدوائي للمؤسسات الصحية. يضمن النظام سرعة الوصول للمعلومات، مع الحفاظ على استقلالية وأمان بيانات كل مستشفى.
             </p>
             <div class="text-right bg-slate-50 p-4 rounded-2xl mb-2">
                 <p class="text-xs sm:text-sm font-bold text-slate-400 mb-1">إعداد وتصميم النظام:</p>
@@ -222,12 +226,11 @@
                 <p class="text-xs sm:text-sm font-bold text-slate-400 mb-1">بالتعاون مع:</p>
                 <p class="font-bold text-slate-800 text-sm sm:text-base">الصيدلاني تميم حازم <span class="font-semibold text-slate-500 text-xs block mt-1">(مسؤول تقدير الاحتياج - مستشفى الموانئ)</span></p>
             </div>
-            <button onclick="closeAboutModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-xl transition-colors text-sm sm:text-base">إغلاق</button>
+            <button onclick="closeAboutModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-xl transition-colors text-sm sm:text-base">إغلاق النافذة</button>
         </div>
     </div>
 
-    <!-- بقية النوافذ (تسجيل الدخول، مقترحات، تأكيد حذف، تغيير الرمز، التثبيت) -->
-    <!-- (قمت بتضمينها نفسها كما كانت سابقاً مع تحسينات الخطوط المتجاوبة) -->
+    <!-- نافذة تسجيل الدخول -->
     <div id="authModal" class="hidden-section fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl p-6 sm:p-8 w-full max-w-sm modal-enter relative text-center">
             <button onclick="closeAuthModal()" class="absolute top-5 sm:top-6 right-5 sm:right-6 text-slate-400 hover:text-slate-700 transition bg-slate-100 p-2 rounded-full"><svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
@@ -269,7 +272,7 @@
         </div>
     </div>
 
-    <!-- نافذة المحادثة للمستشفيات (أو للإدارة عند اختيار مستشفى) -->
+    <!-- نافذة المحادثة -->
     <div id="supportChatModal" class="hidden-section fixed inset-0 bg-slate-900/70 z-50 flex items-end sm:items-center justify-center sm:p-4 backdrop-blur-md">
         <div class="bg-white rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl w-full max-w-md h-[85vh] sm:h-[600px] flex flex-col relative overflow-hidden transition-transform transform translate-y-0">
             <div class="bg-blue-600 p-4 sm:p-5 flex justify-between items-center text-white shadow-md z-10">
@@ -298,7 +301,7 @@
         </div>
     </div>
 
-    <!-- نوافذ جانبية (تغيير رمز، تأكيد مسح، تثبيت) -->
+    <!-- نافذة تأكيد الحذف وتغيير الرمز والتثبيت -->
     <div id="customConfirmModal" class="hidden-section fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl p-6 sm:p-8 w-full max-w-sm modal-enter text-center relative">
             <div class="w-16 h-16 sm:w-20 sm:h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5 sm:mb-6 text-red-500"><svg class="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
@@ -351,7 +354,7 @@
         const em1 = "apk.saadalhamady"; const em2 = "gmail.com";
         document.getElementById('feedbackForm').action = `https://formsubmit.co/${em1}@${em2}`;
 
-        // 🟢 المستشفيات (مع حساب الإدارة المركزية المضاف)
+        // المستشفيات (مع حساب الإدارة المركزية المضاف)
         const HOSPITALS = [
             { id: "mawani", name: "مستشفى الموانئ التعليمي", defaultPin: "1111" },
             { id: "basra_teach", name: "مستشفى البصرة التعليمي", defaultPin: "2222" },
@@ -365,7 +368,7 @@
             { id: "qurna", name: "مستشفى القرنة العام", defaultPin: "1010" },
             { id: "faw", name: "مستشفى الفاو العام", defaultPin: "2020" },
             { id: "sayyab", name: "مستشفى السياب التعليمي", defaultPin: "3030" },
-            { id: "super_admin", name: "الإدارة المركزية (المدير العام)", defaultPin: "2026" } // حسابك السري
+            { id: "super_admin", name: "الإدارة المركزية (المدير العام)", defaultPin: "2026" }
         ];
 
         let loggedInHospital = null;
@@ -377,17 +380,13 @@
         let superAdminChatsUnsubscribe = null;
 
         function populateHospitals() {
-            // المستشفيات العادية فقط للبحث وللدردشة
             const normalHospitals = HOSPITALS.filter(h => h.id !== 'super_admin');
-            
             const searchSelect = document.getElementById('searchHospital');
             const chatSelect = document.getElementById('chatHospitalSelect');
             const loginSelect = document.getElementById('loginHospital');
 
             if(searchSelect) { searchSelect.innerHTML = ''; normalHospitals.forEach(hosp => searchSelect.appendChild(new Option(hosp.name, hosp.id))); }
             if(chatSelect) { chatSelect.innerHTML = ''; normalHospitals.forEach(hosp => chatSelect.appendChild(new Option(hosp.name, hosp.id))); }
-            
-            // قائمة تسجيل الدخول تحتوي على الجميع (بما فيهم الإدارة المركزية)
             if(loginSelect) { loginSelect.innerHTML = ''; HOSPITALS.forEach(hosp => loginSelect.appendChild(new Option(hosp.name, hosp.id))); }
         }
 
@@ -411,7 +410,12 @@
             return localStorage.getItem('estincode_pin_' + hospitalId) || hosp.defaultPin;
         }
 
-        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+        // PWA مع إجبار التحديث
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js?v=' + new Date().getTime()).then((registration) => {
+                registration.update();
+            });
+        }
         let deferredPrompt;
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
         if (!isStandalone) {
@@ -454,7 +458,6 @@
             if (chatUnsubscribe) { chatUnsubscribe(); chatUnsubscribe = null; }
         }
 
-        // بدء شات كمستشفى أو كمدير
         function startChatSession(overrideHospId = null) {
             activeChatHospitalId = overrideHospId || document.getElementById('chatHospitalSelect').value;
             const hospObj = HOSPITALS.find(h => h.id === activeChatHospitalId);
@@ -478,16 +481,14 @@
                     snapshot.forEach(doc => {
                         const msg = doc.data();
                         const msgDiv = document.createElement('div');
-                        
-                        // تمييز الألوان بناءً على من قام بالدخول
                         const isSuperAdmin = (loggedInHospital && loggedInHospital.id === 'super_admin');
                         
                         if (msg.sender === 'hospital') {
-                            msgDiv.className = isSuperAdmin ? 'chat-bubble-hosp' : 'chat-bubble-admin bg-blue-500'; // إذا كان مستشفى فتظهر كرسالته
+                            msgDiv.className = isSuperAdmin ? 'chat-bubble-hosp' : 'chat-bubble-admin bg-blue-500';
                             if(isSuperAdmin) msgDiv.innerHTML = `<span class="block text-[10px] opacity-70 mb-1">المستشفى:</span>${msg.text}`;
                             else msgDiv.innerText = msg.text;
                         } else {
-                            msgDiv.className = isSuperAdmin ? 'chat-bubble-admin' : 'chat-bubble-hosp bg-teal-100 text-teal-800'; // الإدارة
+                            msgDiv.className = isSuperAdmin ? 'chat-bubble-admin' : 'chat-bubble-hosp bg-teal-100 text-teal-800';
                             if(!isSuperAdmin) msgDiv.innerHTML = `<span class="block text-[10px] opacity-70 mb-1">الإدارة المركزية:</span>${msg.text}`;
                             else msgDiv.innerText = msg.text;
                         }
@@ -516,7 +517,6 @@
             } catch (error) { console.error("خطأ", error); }
         }
 
-        // --- دوال لوحة الإدارة العليا (Super Admin) ---
         function loadSuperAdminDashboard() {
             const listDiv = document.getElementById('adminChatsList');
             if (superAdminChatsUnsubscribe) superAdminChatsUnsubscribe();
@@ -547,7 +547,6 @@
             startChatSession(hospId);
         }
 
-        // --- التنقل وتأكيد الرمز ---
         function switchTab(tab) {
             document.getElementById('search-section').classList.add('hidden-section');
             document.getElementById('upload-section').classList.add('hidden-section');
@@ -563,7 +562,6 @@
                 document.getElementById('tab-upload').classList.add('tab-active');
                 document.getElementById('tab-search').classList.add('text-slate-500');
                 
-                // توجيه الشاشات حسب صلاحية الدخول
                 if (loggedInHospital && loggedInHospital.id === 'super_admin') {
                     document.getElementById('super-admin-section').classList.remove('hidden-section');
                     loadSuperAdminDashboard();
@@ -598,7 +596,6 @@
             }
         }
 
-        // تغيير الرمز
         function showChangePinModal() {
             document.getElementById('changePinModal').classList.remove('hidden-section');
             document.getElementById('oldPinInput').value = ''; document.getElementById('newPinInput').value = '';
@@ -614,8 +611,6 @@
             setTimeout(() => closeChangePinModal(), 1500);
         }
 
-        // دوال قاعدة البيانات (البحث، الرفع، الحذف) تم اختصارها لأنها لم تتغير 
-        // وتعمل بشكل ممتاز بناءً على 'loggedInHospital.id' كما هي في الكود السابق.
         async function performSearch() {
             const queryText = document.getElementById('searchInput').value.trim().toLowerCase();
             const year = document.getElementById('searchYear').value;
@@ -708,12 +703,6 @@
             } catch (error) { statusDiv.className = 'mt-6 sm:mt-8 p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border bg-red-50 border-red-100 block fade-in'; statusDiv.innerHTML = `<div class="font-bold text-red-700 text-sm sm:text-lg ltr text-left">Error: ${error.message}</div>`; }
         });
 
-        function requestDeleteYear() {
-            targetYearToDelete = document.getElementById('deleteYear').value;
-            document.getElementById('confirmModalText').innerHTML = `هل أنت متأكد من مسح جميع بيانات <strong>سنة ${targetYearToDelete}</strong> الخاصة بـ <strong class="text-red-600">${loggedInHospital.name}</strong> بالكامل؟ <br><br> لا يمكن التراجع عن هذا الإجراء!`;
-            document.getElementById('customConfirmModal').classList.remove('hidden-section');
-        }
-        function closeConfirmModal() { document.getElementById('customConfirmModal').classList.add('hidden-section'); }
         async function executeDeleteYear() {
             closeConfirmModal(); const year = targetYearToDelete; const statusDiv = document.getElementById('uploadStatus'); isOperationCancelled = false;
             statusDiv.className = 'mt-6 sm:mt-8 p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border bg-amber-50 border-amber-100 block fade-in'; statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-sm sm:text-lg flex items-center gap-1.5 sm:gap-2"><svg class="animate-spin h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> جاري فحص البيانات...</div>`;
