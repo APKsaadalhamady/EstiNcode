@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>EstiNcode</title>
+    <title>EstiNcode | النظام الوطني السحابي</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f766e">
     
@@ -30,6 +30,7 @@
     <style>
         body { background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
         .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(20, 184, 166, 0.15); }
+        .glass-footer { background: linear-gradient(180deg, rgba(248, 250, 252, 0) 0%, rgba(226, 232, 240, 0.5) 100%); }
         .tab-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .tab-active { background-color: #ffffff; color: #0f766e; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); font-weight: 700; }
         .hidden-section { display: none !important; }
@@ -38,21 +39,24 @@
         .progress-bar-fill { transition: width 0.4s ease-out; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        /* زر الاقتراحات العائم */
+        .fab-button { position: fixed; bottom: 24px; left: 24px; z-index: 45; animation: bounceFloat 3s infinite ease-in-out; }
+        @keyframes bounceFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
     </style>
 </head>
-<body class="text-slate-800 relative antialiased">
+<body class="text-slate-800 relative antialiased flex flex-col min-h-screen">
 
     <!-- الشريط العلوي الاحترافي -->
     <nav class="glass-header sticky top-0 z-40 w-full">
-        <div class="max-w-4xl mx-auto px-5">
+        <div class="max-w-5xl mx-auto px-5">
             <div class="flex justify-between items-center h-20">
                 <div class="flex items-center gap-3">
                     <div class="bg-gradient-to-br from-medical-500 to-medical-700 p-2.5 rounded-2xl shadow-lg shadow-medical-500/30">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold text-slate-800 leading-tight">EstiNcode</h1>
-                        <p class="text-xs font-semibold text-medical-600">تقدير الاحتياج الدوائي</p>
+                        <h1 class="text-xl font-bold text-slate-800 leading-tight">EstiNcode Cloud</h1>
+                        <p class="text-xs font-semibold text-medical-600">النظام المركزي لتقدير الاحتياج</p>
                     </div>
                 </div>
             </div>
@@ -60,8 +64,8 @@
     </nav>
 
     <!-- شريط التبويبات الكبسولي -->
-    <div class="max-w-4xl mx-auto px-5 mt-6">
-        <div class="flex bg-slate-200/70 p-1.5 rounded-3xl w-full sm:w-96 mx-auto mb-8 relative">
+    <div class="max-w-5xl mx-auto px-5 mt-6 flex-grow-0 w-full">
+        <div class="flex bg-slate-200/70 p-1.5 rounded-3xl w-full sm:w-[28rem] mx-auto mb-8 relative">
             <button id="tab-search" class="tab-btn flex-1 py-3 rounded-2xl text-sm tab-active flex items-center justify-center gap-2" onclick="switchTab('search')">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 البحث المتقدم
@@ -73,69 +77,66 @@
         </div>
     </div>
 
-    <div class="max-w-4xl mx-auto px-5 pb-16">
+    <!-- المحتوى الرئيسي -->
+    <div class="max-w-5xl mx-auto px-5 flex-grow w-full z-10 pb-10">
         
         <!-- قسم البحث -->
         <section id="search-section" class="fade-in">
             <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 mb-8">
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <div class="relative sm:w-1/3">
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4">
+                    <div class="relative sm:col-span-2">
+                        <select id="searchHospital" class="w-full p-4 pl-10 border-2 border-slate-100 rounded-2xl bg-slate-50 focus:border-medical-500 focus:bg-white outline-none text-lg font-bold text-slate-700 appearance-none transition-all"></select>
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none"><svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                    </div>
+                    <div class="relative sm:col-span-2">
                         <select id="searchYear" class="w-full p-4 pl-10 border-2 border-slate-100 rounded-2xl bg-slate-50 focus:border-medical-500 focus:bg-white outline-none text-lg font-bold text-slate-700 appearance-none transition-all"></select>
-                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none"><svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                     </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-4">
                     <div class="relative w-full">
-                        <input type="text" id="searchInput" placeholder="ابحث باسم المادة أو الرمز..." class="w-full p-4 pr-12 border-2 border-slate-100 rounded-2xl bg-slate-50 focus:border-medical-500 focus:bg-white outline-none text-lg font-semibold transition-all placeholder:text-slate-400" onkeypress="if(event.key === 'Enter') performSearch()">
-                        <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                            <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        </div>
+                        <input type="text" id="searchInput" placeholder="ابحث باسم المادة أو الرمز الدوائي..." class="w-full p-4 pr-12 border-2 border-slate-100 rounded-2xl bg-slate-50 focus:border-medical-500 focus:bg-white outline-none text-lg font-semibold transition-all placeholder:text-slate-400" onkeypress="if(event.key === 'Enter') performSearch()">
+                        <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none"><svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>
                     </div>
-                    <button onclick="performSearch()" class="bg-medical-600 hover:bg-medical-700 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg shadow-medical-600/30 sm:w-auto w-full">بحث</button>
+                    <button onclick="performSearch()" class="bg-medical-600 hover:bg-medical-700 text-white px-10 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg shadow-medical-600/30 sm:w-auto w-full">بحث</button>
                 </div>
             </div>
 
-            <!-- حاوية النتائج -->
             <div id="results" class="space-y-4">
                 <div class="text-center flex flex-col items-center justify-center py-16 opacity-60">
                     <svg class="w-20 h-20 text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    <p class="text-slate-500 font-semibold text-lg">أدخل كلمة البحث واختر السنة لعرض النتائج</p>
+                    <p class="text-slate-500 font-semibold text-lg">اختر المستشفى والسنة، ثم أدخل كلمة البحث</p>
                 </div>
             </div>
         </section>
 
-        <!-- لوحة التحكم (المسؤول) -->
+        <!-- لوحة تحكم المستشفى -->
         <section id="upload-section" class="hidden-section fade-in">
-            <!-- رأس لوحة التحكم وزر تغيير الرمز -->
-            <div class="flex justify-between items-center mb-6 px-2">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 px-2 gap-4">
                 <div class="flex items-center gap-3">
-                    <div class="bg-slate-200 text-slate-700 p-3 rounded-2xl">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <div class="bg-medical-50 text-medical-600 p-3 rounded-2xl"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div>
+                    <div>
+                        <!-- إزالة عبارة بوابة المسؤول وإظهار اسم المستشفى فقط -->
+                        <h2 id="adminTitle" class="text-2xl font-bold text-slate-800"></h2>
+                        <p class="text-sm font-semibold text-slate-500">إدارة قاعدة البيانات المستقلة</p>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-800">بوابة المسؤول</h2>
                 </div>
                 <button onclick="showChangePinModal()" class="bg-white border-2 border-slate-200 text-slate-600 hover:text-medical-600 hover:border-medical-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-all flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
-                    تغيير الرمز
+                    تغيير الرمز السري
                 </button>
             </div>
 
             <!-- الرفع -->
             <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 mb-8">
-                <h3 class="font-bold text-blue-900 text-lg mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                    رفع بيانات جديدة:
-                </h3>
-                
+                <h3 class="font-bold text-blue-900 text-lg mb-4 flex items-center gap-2"><svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg> رفع بيانات جديدة:</h3>
                 <div class="flex flex-col sm:flex-row gap-4 mb-6">
                     <div class="relative sm:w-1/3">
                         <select id="uploadYear" class="w-full p-4 pl-10 border-2 border-slate-100 rounded-2xl bg-slate-50 focus:border-blue-500 outline-none text-lg font-bold text-slate-700 appearance-none"></select>
-                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none"><svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                     </div>
                 </div>
-
                 <div class="border-2 border-dashed border-slate-300 rounded-[2rem] p-10 text-center bg-slate-50 hover:bg-blue-50 hover:border-blue-400 transition-all cursor-pointer group" onclick="document.getElementById('fileInput').click()">
                     <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm group-hover:scale-110 transition-transform">
                         <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -149,25 +150,18 @@
             <!-- الحذف -->
             <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-red-100">
                 <div class="flex items-center gap-3 mb-6">
-                    <div class="bg-red-50 p-3 rounded-2xl text-red-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    </div>
+                    <div class="bg-red-50 p-3 rounded-2xl text-red-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></div>
                     <div>
                         <h3 class="font-bold text-red-700 text-xl">مسح البيانات بالكامل</h3>
-                        <p class="text-slate-500 text-sm font-semibold">احذف جميع ملفات سنة معينة.</p>
+                        <p class="text-slate-500 text-sm font-semibold">احذف جميع ملفات سنة معينة الخاصة بمستشفاك.</p>
                     </div>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-4 items-center bg-red-50/50 p-4 rounded-2xl border border-red-100">
                     <div class="relative w-full sm:w-1/2">
                         <select id="deleteYear" class="w-full p-4 pl-10 border-2 border-red-200 rounded-2xl bg-white focus:border-red-500 outline-none text-lg font-bold text-slate-700 appearance-none"></select>
-                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none"><svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                     </div>
-                    <!-- زر الحذف الذي يفتح النافذة الاحترافية بدلاً من الافتراضية -->
-                    <button onclick="requestDeleteYear()" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg shadow-red-600/30">
-                        تنفيذ المسح
-                    </button>
+                    <button onclick="requestDeleteYear()" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg shadow-red-600/30">تنفيذ المسح</button>
                 </div>
             </div>
 
@@ -175,62 +169,95 @@
         </section>
     </div>
 
+    <!-- التذييل الراقي لحقوق الملكية (Credits) -->
+    <footer class="glass-footer w-full mt-auto py-8 px-5 border-t border-slate-200/60 z-0 relative">
+        <div class="max-w-4xl mx-auto text-center flex flex-col items-center">
+            <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 mb-4 inline-block">
+                <svg class="w-6 h-6 text-medical-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+            </div>
+            <p class="text-slate-500 text-sm md:text-base font-semibold leading-loose max-w-3xl">
+                تم تصميم وتطوير هذا النظام السحابي برؤية مشتركة لرقمنة القطاع الصيدلاني، بواسطة الصيدلي السريري <span class="font-bold text-slate-800">سعد نبيل الحمادي</span>، بالتعاون مع مسؤول تقدير الاحتياج في مستشفى الموانئ، الصيدلاني <span class="font-bold text-slate-800">تميم حازم</span>.
+            </p>
+        </div>
+    </footer>
+
+    <!-- زر اقتراحات عائم -->
+    <button onclick="showFeedbackModal()" class="fab-button bg-gradient-to-tr from-amber-400 to-amber-500 hover:scale-110 transition-transform text-white p-4 rounded-full shadow-xl shadow-amber-500/40 flex items-center justify-center">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+    </button>
+
     <!-- نافذة تسجيل الدخول -->
     <div id="authModal" class="hidden-section fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-[2.5rem] shadow-2xl p-8 w-full max-w-sm modal-enter relative text-center">
-            <button onclick="closeAuthModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-700 transition bg-slate-100 p-2 rounded-full">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <div class="w-20 h-20 bg-medical-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg class="w-10 h-10 text-medical-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            <button onclick="closeAuthModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-700 transition bg-slate-100 p-2 rounded-full"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            <div class="w-20 h-20 bg-medical-50 rounded-full flex items-center justify-center mx-auto mb-6"><svg class="w-10 h-10 text-medical-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div>
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">تسجيل دخول المسؤول</h3>
+            <p class="text-slate-500 font-semibold mb-6 text-sm">اختر مؤسستك وأدخل الرمز السري</p>
+            
+            <div class="relative w-full mb-4 text-right">
+                <select id="loginHospital" class="w-full p-4 pl-10 border-2 border-slate-100 rounded-2xl bg-slate-50 focus:border-medical-500 focus:bg-white outline-none text-lg font-bold text-slate-800 appearance-none transition-all"></select>
+                <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none"><svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
             </div>
-            <h3 class="text-2xl font-bold text-slate-800 mb-2">لوحة التحكم</h3>
-            <p class="text-slate-500 font-semibold mb-8 text-sm">أدخل الرمز السري الخاص بالمسؤول</p>
+
+            <input type="password" id="pinInput" placeholder="الرمز السري..." class="w-full p-4 border-2 border-slate-100 rounded-2xl text-center text-2xl tracking-[0.5em] focus:border-medical-500 focus:bg-medical-50 outline-none mb-4 font-bold text-slate-800 transition-colors" onkeypress="if(event.key === 'Enter') verifyPin()">
+            <p id="pinError" class="text-red-500 font-bold mb-4 hidden-section text-sm bg-red-50 p-2 rounded-lg">الرمز السري غير صحيح!</p>
             
-            <input type="password" id="pinInput" placeholder="••••" class="w-full p-4 border-2 border-slate-100 rounded-2xl text-center text-3xl tracking-[1em] focus:border-medical-500 focus:bg-medical-50 outline-none mb-4 font-bold text-slate-800 transition-colors" onkeypress="if(event.key === 'Enter') verifyPin()">
-            <p id="pinError" class="text-red-500 font-bold mb-4 hidden-section text-sm bg-red-50 p-2 rounded-lg">الرمز غير صحيح!</p>
-            
-            <button onclick="verifyPin()" class="w-full bg-medical-600 hover:bg-medical-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-medical-600/30 text-lg">دخول</button>
+            <button onclick="verifyPin()" class="w-full bg-medical-600 hover:bg-medical-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-medical-600/30 text-lg">دخول للوحة التحكم</button>
         </div>
     </div>
 
-    <!-- نافذة تأكيد الحذف (الاحترافية البديلة للمتصفح) -->
+    <!-- نافذة إرسال الاقتراحات (مخفية الإيميل برمجياً) -->
+    <div id="feedbackModal" class="hidden-section fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl p-8 w-full max-w-md modal-enter relative text-center">
+            <button onclick="closeFeedbackModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-700 transition bg-slate-100 p-2 rounded-full"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            <div class="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-4"><svg class="w-10 h-10 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg></div>
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">أفكار ومقترحات للتطوير</h3>
+            <p class="text-slate-500 font-semibold mb-6 text-sm leading-relaxed">يسعدنا استقبال أفكارك ومقترحاتك لتطوير النظام، وسيتم إرسالها مباشرة لمطوري التطبيق.</p>
+            
+            <form id="feedbackForm" method="POST" class="text-right">
+                <!-- إعدادات نموذج الإرسال -->
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_subject" value="💡 مقترح جديد لتطوير تطبيق EstiNcode">
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_next" value="https://apksaadalhamady.github.io/EstiNcode/">
+                
+                <input type="text" name="name" placeholder="اسمك الكريم (اختياري)" class="w-full p-4 border-2 border-slate-100 rounded-2xl bg-slate-50 focus:border-amber-400 focus:bg-white outline-none mb-3 font-semibold text-slate-800 transition-colors">
+                <textarea name="message" required placeholder="اكتب مقترحك أو فكرتك هنا بوضوح..." rows="4" class="w-full p-4 border-2 border-slate-100 rounded-2xl bg-slate-50 focus:border-amber-400 focus:bg-white outline-none mb-4 font-semibold text-slate-800 transition-colors resize-none"></textarea>
+                
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-amber-500/30 text-lg flex justify-center items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    إرسال المقترح
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- بقية النوافذ (تأكيد الحذف وتغيير الرمز والتثبيت) -->
     <div id="customConfirmModal" class="hidden-section fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-[2.5rem] shadow-2xl p-8 w-full max-w-sm modal-enter text-center relative">
-            <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-            </div>
-            <h3 class="text-2xl font-bold text-slate-800 mb-2">تأكيد الحذف</h3>
+            <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">تأكيد المسح النهائي</h3>
             <p id="confirmModalText" class="text-slate-500 font-semibold mb-8 text-sm leading-relaxed"></p>
             <div class="flex gap-3">
-                <button onclick="executeDeleteYear()" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-4 rounded-2xl font-bold transition-all shadow-lg shadow-red-600/30 text-lg">نعم، متأكد</button>
-                <button onclick="closeConfirmModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-4 rounded-2xl font-bold transition-all text-lg">إلغاء</button>
+                <button onclick="executeDeleteYear()" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-4 rounded-2xl font-bold transition-all shadow-lg shadow-red-600/30 text-lg">نعم، امسح</button>
+                <button onclick="closeConfirmModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-4 rounded-2xl font-bold transition-all text-lg">تراجع</button>
             </div>
         </div>
     </div>
 
-    <!-- نافذة تغيير الرمز السري -->
     <div id="changePinModal" class="hidden-section fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-[2.5rem] shadow-2xl p-8 w-full max-w-sm modal-enter relative text-center">
-            <button onclick="closeChangePinModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-700 transition bg-slate-100 p-2 rounded-full">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
-            </div>
-            <h3 class="text-2xl font-bold text-slate-800 mb-6">تغيير الرمز السري</h3>
-            
-            <input type="password" id="oldPinInput" placeholder="الرمز القديم" class="w-full p-4 border-2 border-slate-100 rounded-2xl text-center text-xl tracking-widest focus:border-blue-500 focus:bg-blue-50 outline-none mb-3 font-bold text-slate-800 transition-colors">
+            <button onclick="closeChangePinModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-700 transition bg-slate-100 p-2 rounded-full"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6"><svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg></div>
+            <h3 class="text-2xl font-bold text-slate-800 mb-6">تغيير رمز الدخول</h3>
+            <input type="password" id="oldPinInput" placeholder="الرمز الحالي" class="w-full p-4 border-2 border-slate-100 rounded-2xl text-center text-xl tracking-widest focus:border-blue-500 focus:bg-blue-50 outline-none mb-3 font-bold text-slate-800 transition-colors">
             <input type="password" id="newPinInput" placeholder="الرمز الجديد" class="w-full p-4 border-2 border-slate-100 rounded-2xl text-center text-xl tracking-widest focus:border-blue-500 focus:bg-blue-50 outline-none mb-4 font-bold text-slate-800 transition-colors">
-            
             <p id="changePinError" class="text-red-500 font-bold mb-4 hidden-section text-sm bg-red-50 p-2 rounded-lg"></p>
-            <p id="changePinSuccess" class="text-green-600 font-bold mb-4 hidden-section text-sm bg-green-50 p-2 rounded-lg">تم تغيير الرمز بنجاح!</p>
-            
+            <p id="changePinSuccess" class="text-green-600 font-bold mb-4 hidden-section text-sm bg-green-50 p-2 rounded-lg">تم تغيير رمز المستشفى بنجاح!</p>
             <button onclick="saveNewPin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-blue-600/30 text-lg">حفظ التغيير</button>
         </div>
     </div>
 
-    <!-- نافذة التثبيت -->
     <div id="installModal" class="hidden-section fixed inset-0 bg-slate-900/60 z-50 flex items-end sm:items-center justify-center pb-6 sm:p-4 backdrop-blur-sm">
         <div class="bg-white rounded-[2.5rem] shadow-2xl p-6 w-full max-w-sm mx-4 modal-enter relative text-center">
             <button onclick="closeInstallModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 bg-slate-100 p-1.5 rounded-full"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
@@ -242,7 +269,7 @@
     </div>
 
     <script>
-        // إعدادات Firebase المخفية 
+        // إعدادات Firebase المخفية
         const keys = { p1: "AIzaSyC8", p2: "bp1Jt17Q", p3: "wHRkA97XWX3mBwvAvtjmKzY" };
         const firebaseConfig = {
             apiKey: keys.p1 + keys.p2 + keys.p3,
@@ -256,31 +283,68 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // إخفاء الإيميل برمجياً لنموذج الاقتراحات
+        const em1 = "apk.saadalhamady";
+        const em2 = "gmail.com";
+        document.getElementById('feedbackForm').action = `https://formsubmit.co/${em1}@${em2}`;
+
+        // 🟢 المستشفيات الـ 12 المعتمدة مع رموزها
+        const HOSPITALS = [
+            { id: "mawani", name: "مستشفى الموانئ التعليمي", defaultPin: "1111" },
+            { id: "basra_teach", name: "مستشفى البصرة التعليمي", defaultPin: "2222" },
+            { id: "fayhaa", name: "مستشفى الفيحاء التعليمي", defaultPin: "3333" },
+            { id: "shifaa", name: "مستشفى الشفاء", defaultPin: "4444" },
+            { id: "sadr", name: "مستشفى الصدر التعليمي", defaultPin: "5555" },
+            { id: "maternity", name: "مستشفى البصرة للولادة والاطفال", defaultPin: "6666" },
+            { id: "child_spec", name: "مستشفى البصرة التخصصي للاطفال", defaultPin: "7777" },
+            { id: "zubair", name: "مستشفى الزبير العام", defaultPin: "8888" },
+            { id: "umqasr", name: "مستشفى ام قصر العام", defaultPin: "9999" },
+            { id: "qurna", name: "مستشفى القرنة العام", defaultPin: "1010" },
+            { id: "faw", name: "مستشفى الفاو العام", defaultPin: "2020" },
+            { id: "sayyab", name: "مستشفى السياب التعليمي", defaultPin: "3030" }
+        ];
+
+        let loggedInHospital = null;
         let isOperationCancelled = false;
-        let targetYearToDelete = null; 
+        let targetYearToDelete = null;
 
-        // نظام الرمز السري المرن (حفظ في الجهاز)
-        function getSystemPin() {
-            return localStorage.getItem('estincode_admin_pin') || "2026";
-        }
-
-        function generateYears() {
-            const selects = ['searchYear', 'uploadYear', 'deleteYear'];
-            const defaultYear = 2026;
+        function populateHospitals() {
+            const selects = ['searchHospital', 'loginHospital'];
             selects.forEach(id => {
                 const selectElement = document.getElementById(id);
                 if(selectElement) {
                     selectElement.innerHTML = '';
-                    for (let year = 2000; year <= 2050; year++) {
+                    HOSPITALS.forEach(hosp => {
+                        const option = document.createElement('option');
+                        option.value = hosp.id; option.text = hosp.name;
+                        selectElement.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        function generateYears() {
+            const selects = ['searchYear', 'uploadYear', 'deleteYear'];
+            selects.forEach(id => {
+                const selectElement = document.getElementById(id);
+                if(selectElement) {
+                    selectElement.innerHTML = '';
+                    for (let year = 2026; year <= 2050; year++) {
                         const option = document.createElement('option');
                         option.value = year; option.text = 'سنة ' + year;
-                        if (year === defaultYear) option.selected = true;
                         selectElement.appendChild(option);
                     }
                 }
             });
         }
+        
+        populateHospitals();
         generateYears();
+
+        function getHospitalPin(hospitalId) {
+            const hosp = HOSPITALS.find(h => h.id === hospitalId);
+            return localStorage.getItem('estincode_pin_' + hospitalId) || hosp.defaultPin;
+        }
 
         if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
         let deferredPrompt;
@@ -333,17 +397,25 @@
         }
         function closeAuthModal() { document.getElementById('authModal').classList.add('hidden-section'); }
 
+        function showFeedbackModal() { document.getElementById('feedbackModal').classList.remove('hidden-section'); }
+        function closeFeedbackModal() { document.getElementById('feedbackModal').classList.add('hidden-section'); }
+
         function verifyPin() {
-            const input = document.getElementById('pinInput').value;
-            if (input === getSystemPin()) {
-                closeAuthModal(); switchTab('upload');
+            const selectedHospId = document.getElementById('loginHospital').value;
+            const inputPin = document.getElementById('pinInput').value;
+            
+            if (inputPin === getHospitalPin(selectedHospId)) {
+                loggedInHospital = HOSPITALS.find(h => h.id === selectedHospId);
+                // إظهار اسم المستشفى فقط كعنوان
+                document.getElementById('adminTitle').innerText = loggedInHospital.name;
+                closeAuthModal(); 
+                switchTab('upload');
             } else {
                 document.getElementById('pinError').classList.remove('hidden-section');
                 document.getElementById('pinInput').value = '';
             }
         }
 
-        // دوال تغيير الرمز
         function showChangePinModal() {
             document.getElementById('changePinModal').classList.remove('hidden-section');
             document.getElementById('oldPinInput').value = '';
@@ -355,35 +427,33 @@
         function saveNewPin() {
             const oldPin = document.getElementById('oldPinInput').value;
             const newPin = document.getElementById('newPinInput').value;
-            if (oldPin !== getSystemPin()) {
+            
+            if (oldPin !== getHospitalPin(loggedInHospital.id)) {
                 document.getElementById('changePinError').innerText = 'الرمز القديم غير صحيح!';
-                document.getElementById('changePinError').classList.remove('hidden-section');
-                return;
+                document.getElementById('changePinError').classList.remove('hidden-section'); return;
             }
             if (newPin.length < 4) {
                 document.getElementById('changePinError').innerText = 'الرمز الجديد يجب أن يكون 4 أرقام/أحرف على الأقل.';
-                document.getElementById('changePinError').classList.remove('hidden-section');
-                return;
+                document.getElementById('changePinError').classList.remove('hidden-section'); return;
             }
-            localStorage.setItem('estincode_admin_pin', newPin);
+            localStorage.setItem('estincode_pin_' + loggedInHospital.id, newPin);
             document.getElementById('changePinError').classList.add('hidden-section');
             document.getElementById('changePinSuccess').classList.remove('hidden-section');
             setTimeout(() => closeChangePinModal(), 1500);
         }
 
-        // دوال التأكيد المخصص للحذف (تلغي نافذة المتصفح)
         function requestDeleteYear() {
             targetYearToDelete = document.getElementById('deleteYear').value;
-            document.getElementById('confirmModalText').innerHTML = `هل أنت متأكد من مسح جميع بيانات <strong>سنة ${targetYearToDelete}</strong> بالكامل؟ <br><br> لا يمكن التراجع عن هذا الإجراء!`;
+            document.getElementById('confirmModalText').innerHTML = `هل أنت متأكد من مسح جميع بيانات <strong>سنة ${targetYearToDelete}</strong> الخاصة بـ <strong class="text-red-600">${loggedInHospital.name}</strong> بالكامل؟ <br><br> لا يمكن التراجع عن هذا الإجراء!`;
             document.getElementById('customConfirmModal').classList.remove('hidden-section');
         }
         function closeConfirmModal() { document.getElementById('customConfirmModal').classList.add('hidden-section'); }
-
         function cancelOperation() { isOperationCancelled = true; }
 
         async function performSearch() {
             const queryText = document.getElementById('searchInput').value.trim().toLowerCase();
             const year = document.getElementById('searchYear').value;
+            const hospitalId = document.getElementById('searchHospital').value;
             const resultsDiv = document.getElementById('results');
             
             if(queryText.length < 2) {
@@ -392,7 +462,9 @@
             resultsDiv.innerHTML = `<div class="flex flex-col items-center justify-center py-16"><svg class="animate-spin h-10 w-10 text-medical-500 mb-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><div class="text-medical-600 font-bold text-lg">جاري البحث في السحابة...</div></div>`;
 
             try {
-                const snapshot = await db.collection("medical_data_" + year).get();
+                const collectionName = `medical_data_${hospitalId}_${year}`;
+                const snapshot = await db.collection(collectionName).get();
+                
                 let resultsHTML = ''; let count = 0;
                 snapshot.forEach(doc => {
                     const item = doc.data();
@@ -417,7 +489,7 @@
                         count++;
                     }
                 });
-                if(count === 0) resultsDiv.innerHTML = `<div class="text-center text-slate-500 font-bold py-12 text-lg bg-slate-50 rounded-3xl border border-slate-100">لا توجد نتائج مطابقة في ${year}</div>`;
+                if(count === 0) resultsDiv.innerHTML = `<div class="text-center text-slate-500 font-bold py-12 text-lg bg-slate-50 rounded-3xl border border-slate-100">لا توجد نتائج مطابقة في قاعدة البيانات.</div>`;
                 else resultsDiv.innerHTML = `<div class="text-slate-400 font-bold mb-4 text-sm px-2">تم العثور على ${count} نتيجة:</div>` + resultsHTML;
             } catch (error) { resultsDiv.innerHTML = `<div class="text-center text-red-500 font-bold py-12 text-lg bg-red-50 rounded-3xl">حدث خطأ في الاتصال بالسحابة.</div>`; }
         }
@@ -426,6 +498,7 @@
             const files = e.target.files; if(files.length === 0) return;
             const year = document.getElementById('uploadYear').value;
             const statusDiv = document.getElementById('uploadStatus');
+            
             isOperationCancelled = false;
             statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-blue-50 border-blue-100 block fade-in';
             statusDiv.innerHTML = `<div class="font-bold text-blue-800 text-lg flex items-center gap-2"><svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> جاري استخراج البيانات...</div>`;
@@ -489,7 +562,9 @@
             
             let progressBar = document.getElementById('uploadProgressBar'), progressText = document.getElementById('uploadProgressText'), progressPercent = document.getElementById('uploadProgressPercent');
             try {
-                const collectionRef = db.collection("medical_data_" + year);
+                const collectionName = `medical_data_${loggedInHospital.id}_${year}`;
+                const collectionRef = db.collection(collectionName);
+                
                 let batch = db.batch(), count = 0, totalCommitted = 0;
                 for (let i = 0; i < uniqueData.length; i++) {
                     if (isOperationCancelled) {
@@ -513,7 +588,6 @@
             }
         });
 
-        // دالة تنفيذ الحذف الفعلية (تُستدعى من النافذة الاحترافية)
         async function executeDeleteYear() {
             closeConfirmModal();
             const year = targetYearToDelete;
@@ -523,7 +597,8 @@
             statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-lg flex items-center gap-2"><svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> جاري فحص البيانات...</div>`;
 
             try {
-                const collectionRef = db.collection("medical_data_" + year);
+                const collectionName = `medical_data_${loggedInHospital.id}_${year}`;
+                const collectionRef = db.collection(collectionName);
                 const snapshot = await collectionRef.get();
                 if (snapshot.empty) {
                     statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-slate-50 border-slate-200 block fade-in';
