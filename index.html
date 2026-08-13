@@ -85,7 +85,7 @@
             </button>
             <button id="tab-upload" class="tab-btn flex-1 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm text-slate-500 font-semibold flex items-center justify-center gap-1.5 sm:gap-2 hover:text-slate-800" onclick="showAuthModal()">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                لوحة التحكم
+                إدارة التطبيق
             </button>
         </div>
     </div>
@@ -183,7 +183,7 @@
                 <div class="flex items-center gap-3">
                     <div class="bg-amber-100 text-amber-600 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl flex-shrink-0"><svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
                     <div class="overflow-hidden">
-                        <h2 class="text-xl sm:text-2xl font-bold text-slate-800 leading-tight truncate w-full">لوحة الإدارة المركزية</h2>
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-800 leading-tight truncate w-full">إدارة التطبيق</h2>
                         <p class="text-[11px] sm:text-xs font-semibold text-slate-500 mt-0.5">مراقبة الرسائل والدعم الفني للمستشفيات</p>
                     </div>
                 </div>
@@ -301,7 +301,7 @@
         </div>
     </div>
 
-    <!-- نافذة تأكيد الحذف وتغيير الرمز والتثبيت -->
+    <!-- نافذة تأكيد الحذف وتغيير الرمز-->
     <div id="customConfirmModal" class="hidden-section fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl p-6 sm:p-8 w-full max-w-sm modal-enter text-center relative">
             <div class="w-16 h-16 sm:w-20 sm:h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5 sm:mb-6 text-red-500"><svg class="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
@@ -327,13 +327,38 @@
         </div>
     </div>
 
-    <div id="installModal" class="hidden-section fixed inset-0 bg-slate-900/60 z-50 flex items-end sm:items-center justify-center pb-6 sm:p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl p-6 w-full max-w-sm mx-4 modal-enter relative text-center">
-            <button onclick="closeInstallModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 bg-slate-100 p-1.5 rounded-full"><svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-            <img src="./icon.png" class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-5 drop-shadow-xl rounded-[1.2rem] sm:rounded-[1.5rem]">
-            <h3 class="text-xl sm:text-2xl font-bold text-slate-800 mb-2">تطبيق EstiNcode</h3>
-            <p class="text-slate-500 font-semibold mb-5 sm:mb-6 text-xs sm:text-sm">ثبت التطبيق للوصول السريع بدون إنترنت</p>
-            <div id="installInstructions"></div>
+    <!-- نافذة دليل التثبيت الإرشادية الاحترافية -->
+    <div id="installGuideModal" class="hidden-section fixed inset-0 bg-slate-900/70 z-50 flex items-end sm:items-center justify-center sm:p-4 backdrop-blur-md">
+        <div class="bg-white rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl p-6 sm:p-8 w-full max-w-md modal-enter relative">
+            <div class="w-16 h-16 bg-medical-50 rounded-full flex items-center justify-center mx-auto mb-4 text-medical-600">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-800 text-center mb-2">ثبّت النظام على هاتفك</h3>
+            <p class="text-slate-500 font-semibold text-center mb-6 text-xs sm:text-sm">للوصول السريع واستخدام التطبيق كبرنامج أساسي في المرات القادمة.</p>
+
+            <div class="bg-slate-50 p-4 rounded-2xl mb-4 border border-slate-100">
+                <div class="flex items-center gap-2 mb-2">
+                    <svg class="w-5 h-5 text-slate-700" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm3.23 15.06c-.18.18-.46.18-.64 0l-3.35-3.35c-.18-.18-.18-.46 0-.64s.46-.18.64 0l3.35 3.35c.18.18.18.46 0 .64zM12 13.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"></path></svg>
+                    <h4 class="font-bold text-slate-800 text-sm">لأجهزة الآيفون (iOS):</h4>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-600 font-semibold leading-relaxed">
+                    1. اضغط على أيقونة المشاركة <svg class="inline w-4 h-4 mx-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg> أسفل المتصفح.<br>
+                    2. اختر <strong>"إضافة للشاشة الرئيسية"</strong> <svg class="inline w-4 h-4 mx-1 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>.
+                </p>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-2xl mb-6 border border-slate-100">
+                <div class="flex items-center gap-2 mb-2">
+                    <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 24 24"><path d="M17.5 8c.46 0 .82-.37.82-.82V5.64l1.3-1.3c.16-.16.16-.41 0-.57-.16-.16-.41-.16-.57 0L17.7 5.1c-1.3-.6-2.8-.9-4.3-.9s-3 .3-4.3.9l-1.3-1.3c-.16-.16-.41-.16-.57 0-.16.16-.16.41 0 .57l1.3 1.3V7.2c0 .45.37.82.82.82h8.2zM7.5 10v6c0 .8.7 1.5 1.5 1.5h6c.8 0 1.5-.7 1.5-1.5v-6h-9z"></path></svg>
+                    <h4 class="font-bold text-slate-800 text-sm">لأجهزة الأندرويد:</h4>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-600 font-semibold leading-relaxed">
+                    1. اضغط على القائمة <svg class="inline w-4 h-4 mx-1 text-slate-700" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg> أعلى الشاشة.<br>
+                    2. اختر <strong>"تثبيت التطبيق" (Install App)</strong>.
+                </p>
+            </div>
+
+            <button onclick="dismissInstallGuide()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 sm:py-4 rounded-xl sm:rounded-2xl transition-all text-sm sm:text-base">الاستمرار من المتصفح (بدون تثبيت)</button>
         </div>
     </div>
 
@@ -354,7 +379,7 @@
         const em1 = "apk.saadalhamady"; const em2 = "gmail.com";
         document.getElementById('feedbackForm').action = `https://formsubmit.co/${em1}@${em2}`;
 
-        // المستشفيات (مع حساب الإدارة المركزية المضاف)
+        // المستشفيات
         const HOSPITALS = [
             { id: "mawani", name: "مستشفى الموانئ التعليمي", defaultPin: "1111" },
             { id: "basra_teach", name: "مستشفى البصرة التعليمي", defaultPin: "2222" },
@@ -374,7 +399,6 @@
         let loggedInHospital = null;
         let isOperationCancelled = false;
         let targetYearToDelete = null;
-        
         let activeChatHospitalId = null;
         let chatUnsubscribe = null;
         let superAdminChatsUnsubscribe = null;
@@ -416,25 +440,21 @@
                 registration.update();
             });
         }
-        let deferredPrompt;
+
+        // إظهار نافذة التثبيت الإرشادية الجديدة
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
         if (!isStandalone) {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-            if (isIOS) {
+            if (!localStorage.getItem('installGuideDismissed')) {
                 setTimeout(() => {
-                    document.getElementById('installInstructions').innerHTML = `<div class="bg-slate-50 p-4 rounded-xl text-right text-xs sm:text-sm font-semibold text-slate-600">1. اضغط رمز المشاركة أسفل الشاشة.<br>2. اختر <b>إضافة للشاشة الرئيسية</b>.</div>`;
-                    document.getElementById('installModal').classList.remove('hidden-section');
+                    document.getElementById('installGuideModal').classList.remove('hidden-section');
                 }, 2000);
-            } else {
-                window.addEventListener('beforeinstallprompt', (e) => {
-                    e.preventDefault(); deferredPrompt = e;
-                    document.getElementById('installInstructions').innerHTML = `<button onclick="triggerInstall()" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-3.5 sm:py-4 rounded-xl transition shadow-lg text-sm sm:text-lg">تثبيت التطبيق الآن</button>`;
-                    setTimeout(() => document.getElementById('installModal').classList.remove('hidden-section'), 2000);
-                });
             }
         }
-        function triggerInstall() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then((c) => { if (c.outcome === 'accepted') closeInstallModal(); deferredPrompt = null; }); } }
-        function closeInstallModal() { document.getElementById('installModal').classList.add('hidden-section'); }
+        
+        function dismissInstallGuide() {
+            localStorage.setItem('installGuideDismissed', 'true');
+            document.getElementById('installGuideModal').classList.add('hidden-section');
+        }
 
         // --- دوال النوافذ والشات ---
         function showAboutModal() { document.getElementById('aboutModal').classList.remove('hidden-section'); }
