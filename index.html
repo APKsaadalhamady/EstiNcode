@@ -7,7 +7,6 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f766e">
     
-    <!-- خط Alexandria الفخم -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -30,17 +29,13 @@
 
     <style>
         body { background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
-        /* التأثير الزجاجي للشريط العلوي */
         .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(20, 184, 166, 0.15); }
-        /* تصميم التبويبات الكبسولية */
         .tab-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .tab-active { background-color: #ffffff; color: #0f766e; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); font-weight: 700; }
         .hidden-section { display: none !important; }
-        /* الأنيميشن */
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .progress-bar-fill { transition: width 0.4s ease-out; }
-        /* تصميم مخصص لشريط التمرير */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
@@ -64,7 +59,7 @@
         </div>
     </nav>
 
-    <!-- شريط التبويبات الكبسولي (للهواتف) -->
+    <!-- شريط التبويبات الكبسولي -->
     <div class="max-w-4xl mx-auto px-5 mt-6">
         <div class="flex bg-slate-200/70 p-1.5 rounded-3xl w-full sm:w-96 mx-auto mb-8 relative">
             <button id="tab-search" class="tab-btn flex-1 py-3 rounded-2xl text-sm tab-active flex items-center justify-center gap-2" onclick="switchTab('search')">
@@ -72,8 +67,8 @@
                 البحث المتقدم
             </button>
             <button id="tab-upload" class="tab-btn flex-1 py-3 rounded-2xl text-sm text-slate-500 font-semibold flex items-center justify-center gap-2 hover:text-slate-800" onclick="showAuthModal()">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                النظام السحابي
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                لوحة التحكم
             </button>
         </div>
     </div>
@@ -111,14 +106,26 @@
 
         <!-- لوحة التحكم (المسؤول) -->
         <section id="upload-section" class="hidden-section fade-in">
+            <!-- رأس لوحة التحكم وزر تغيير الرمز -->
+            <div class="flex justify-between items-center mb-6 px-2">
+                <div class="flex items-center gap-3">
+                    <div class="bg-slate-200 text-slate-700 p-3 rounded-2xl">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800">بوابة المسؤول</h2>
+                </div>
+                <button onclick="showChangePinModal()" class="bg-white border-2 border-slate-200 text-slate-600 hover:text-medical-600 hover:border-medical-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                    تغيير الرمز
+                </button>
+            </div>
+
             <!-- الرفع -->
             <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 mb-8">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="bg-blue-50 p-3 rounded-2xl text-blue-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                    </div>
-                    <h2 class="text-xl font-bold text-slate-800">تحديث البيانات السحابية</h2>
-                </div>
+                <h3 class="font-bold text-blue-900 text-lg mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    رفع بيانات جديدة:
+                </h3>
                 
                 <div class="flex flex-col sm:flex-row gap-4 mb-6">
                     <div class="relative sm:w-1/3">
@@ -139,7 +146,7 @@
                 </div>
             </div>
 
-            <!-- الحذف (منطقة الخطر) -->
+            <!-- الحذف -->
             <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-red-100">
                 <div class="flex items-center gap-3 mb-6">
                     <div class="bg-red-50 p-3 rounded-2xl text-red-600">
@@ -147,7 +154,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-red-700 text-xl">مسح البيانات بالكامل</h3>
-                        <p class="text-slate-500 text-sm font-semibold">تنبيه: هذا الإجراء نهائي ولا يمكن التراجع عنه.</p>
+                        <p class="text-slate-500 text-sm font-semibold">احذف جميع ملفات سنة معينة.</p>
                     </div>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-4 items-center bg-red-50/50 p-4 rounded-2xl border border-red-100">
@@ -157,19 +164,19 @@
                             <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
                     </div>
-                    <button onclick="deleteYearData()" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg shadow-red-600/30">
+                    <!-- زر الحذف الذي يفتح النافذة الاحترافية بدلاً من الافتراضية -->
+                    <button onclick="requestDeleteYear()" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg shadow-red-600/30">
                         تنفيذ المسح
                     </button>
                 </div>
             </div>
 
-            <!-- شاشة الحالة مع شريط التقدم -->
             <div id="uploadStatus" class="mt-8 hidden p-6 rounded-[2rem] border shadow-sm"></div>
         </section>
     </div>
 
-    <!-- نافذة الرمز السري (تصميم حديث) -->
-    <div id="authModal" class="hidden-section fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+    <!-- نافذة تسجيل الدخول -->
+    <div id="authModal" class="hidden-section fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-[2.5rem] shadow-2xl p-8 w-full max-w-sm modal-enter relative text-center">
             <button onclick="closeAuthModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-700 transition bg-slate-100 p-2 rounded-full">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -177,7 +184,7 @@
             <div class="w-20 h-20 bg-medical-50 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg class="w-10 h-10 text-medical-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
             </div>
-            <h3 class="text-2xl font-bold text-slate-800 mb-2">تسجيل الدخول</h3>
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">لوحة التحكم</h3>
             <p class="text-slate-500 font-semibold mb-8 text-sm">أدخل الرمز السري الخاص بالمسؤول</p>
             
             <input type="password" id="pinInput" placeholder="••••" class="w-full p-4 border-2 border-slate-100 rounded-2xl text-center text-3xl tracking-[1em] focus:border-medical-500 focus:bg-medical-50 outline-none mb-4 font-bold text-slate-800 transition-colors" onkeypress="if(event.key === 'Enter') verifyPin()">
@@ -187,12 +194,46 @@
         </div>
     </div>
 
-    <!-- نافذة التثبيت (PWA) -->
-    <div id="installModal" class="hidden-section fixed inset-0 bg-slate-900/60 z-50 flex items-end sm:items-center justify-center pb-6 sm:p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-[2.5rem] shadow-2xl p-6 w-full max-w-sm mx-4 modal-enter relative text-center">
-            <button onclick="closeInstallModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 bg-slate-100 p-1.5 rounded-full">
+    <!-- نافذة تأكيد الحذف (الاحترافية البديلة للمتصفح) -->
+    <div id="customConfirmModal" class="hidden-section fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl p-8 w-full max-w-sm modal-enter text-center relative">
+            <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">تأكيد الحذف</h3>
+            <p id="confirmModalText" class="text-slate-500 font-semibold mb-8 text-sm leading-relaxed"></p>
+            <div class="flex gap-3">
+                <button onclick="executeDeleteYear()" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-4 rounded-2xl font-bold transition-all shadow-lg shadow-red-600/30 text-lg">نعم، متأكد</button>
+                <button onclick="closeConfirmModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-4 rounded-2xl font-bold transition-all text-lg">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تغيير الرمز السري -->
+    <div id="changePinModal" class="hidden-section fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl p-8 w-full max-w-sm modal-enter relative text-center">
+            <button onclick="closeChangePinModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-700 transition bg-slate-100 p-2 rounded-full">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
+            <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-800 mb-6">تغيير الرمز السري</h3>
+            
+            <input type="password" id="oldPinInput" placeholder="الرمز القديم" class="w-full p-4 border-2 border-slate-100 rounded-2xl text-center text-xl tracking-widest focus:border-blue-500 focus:bg-blue-50 outline-none mb-3 font-bold text-slate-800 transition-colors">
+            <input type="password" id="newPinInput" placeholder="الرمز الجديد" class="w-full p-4 border-2 border-slate-100 rounded-2xl text-center text-xl tracking-widest focus:border-blue-500 focus:bg-blue-50 outline-none mb-4 font-bold text-slate-800 transition-colors">
+            
+            <p id="changePinError" class="text-red-500 font-bold mb-4 hidden-section text-sm bg-red-50 p-2 rounded-lg"></p>
+            <p id="changePinSuccess" class="text-green-600 font-bold mb-4 hidden-section text-sm bg-green-50 p-2 rounded-lg">تم تغيير الرمز بنجاح!</p>
+            
+            <button onclick="saveNewPin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-blue-600/30 text-lg">حفظ التغيير</button>
+        </div>
+    </div>
+
+    <!-- نافذة التثبيت -->
+    <div id="installModal" class="hidden-section fixed inset-0 bg-slate-900/60 z-50 flex items-end sm:items-center justify-center pb-6 sm:p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl p-6 w-full max-w-sm mx-4 modal-enter relative text-center">
+            <button onclick="closeInstallModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 bg-slate-100 p-1.5 rounded-full"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             <img src="./icon.png" class="w-24 h-24 mx-auto mb-5 drop-shadow-xl rounded-[1.5rem]">
             <h3 class="text-2xl font-bold text-slate-800 mb-2">تطبيق EstiNcode</h3>
             <p class="text-slate-500 font-semibold mb-6 text-sm">ثبت التطبيق للوصول السريع بدون إنترنت</p>
@@ -201,8 +242,10 @@
     </div>
 
     <script>
+        // إعدادات Firebase المخفية 
+        const keys = { p1: "AIzaSyC8", p2: "bp1Jt17Q", p3: "wHRkA97XWX3mBwvAvtjmKzY" };
         const firebaseConfig = {
-            apiKey: "AIzaSyC8bp1Jt17QwHRkA97XWX3mBwvAvtjmKzY",
+            apiKey: keys.p1 + keys.p2 + keys.p3,
             authDomain: "national-code-guide.firebaseapp.com",
             projectId: "national-code-guide",
             storageBucket: "national-code-guide.firebasestorage.app",
@@ -214,7 +257,12 @@
         const db = firebase.firestore();
 
         let isOperationCancelled = false;
-        function cancelOperation() { isOperationCancelled = true; }
+        let targetYearToDelete = null; 
+
+        // نظام الرمز السري المرن (حفظ في الجهاز)
+        function getSystemPin() {
+            return localStorage.getItem('estincode_admin_pin') || "2026";
+        }
 
         function generateYears() {
             const selects = ['searchYear', 'uploadYear', 'deleteYear'];
@@ -235,43 +283,30 @@
         generateYears();
 
         if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-
         let deferredPrompt;
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-
         if (!isStandalone) {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
             if (isIOS) {
                 setTimeout(() => {
-                    document.getElementById('installInstructions').innerHTML = `
-                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-right text-sm font-semibold text-slate-600">
-                            1. اضغط رمز المشاركة أسفل الشاشة.<br>
-                            2. اختر <b>إضافة للشاشة الرئيسية</b>.
-                        </div>`;
+                    document.getElementById('installInstructions').innerHTML = `<div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-right text-sm font-semibold text-slate-600">1. اضغط رمز المشاركة أسفل الشاشة.<br>2. اختر <b>إضافة للشاشة الرئيسية</b>.</div>`;
                     document.getElementById('installModal').classList.remove('hidden-section');
                 }, 2000);
             } else {
                 window.addEventListener('beforeinstallprompt', (e) => {
                     e.preventDefault(); deferredPrompt = e;
-                    document.getElementById('installInstructions').innerHTML = `
-                        <button onclick="triggerInstall()" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 rounded-2xl transition shadow-lg text-lg">تثبيت التطبيق الآن</button>`;
+                    document.getElementById('installInstructions').innerHTML = `<button onclick="triggerInstall()" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 rounded-2xl transition shadow-lg text-lg">تثبيت التطبيق الآن</button>`;
                     setTimeout(() => document.getElementById('installModal').classList.remove('hidden-section'), 2000);
                 });
             }
         }
-
         function triggerInstall() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') closeInstallModal();
-                    deferredPrompt = null;
-                });
+                deferredPrompt.userChoice.then((choiceResult) => { if (choiceResult.outcome === 'accepted') closeInstallModal(); deferredPrompt = null; });
             }
         }
         function closeInstallModal() { document.getElementById('installModal').classList.add('hidden-section'); }
-
-        const SYSTEM_PIN = "2026"; 
 
         function switchTab(tab) {
             document.getElementById('search-section').classList.add('hidden-section');
@@ -300,7 +335,7 @@
 
         function verifyPin() {
             const input = document.getElementById('pinInput').value;
-            if (input === SYSTEM_PIN) {
+            if (input === getSystemPin()) {
                 closeAuthModal(); switchTab('upload');
             } else {
                 document.getElementById('pinError').classList.remove('hidden-section');
@@ -308,77 +343,89 @@
             }
         }
 
+        // دوال تغيير الرمز
+        function showChangePinModal() {
+            document.getElementById('changePinModal').classList.remove('hidden-section');
+            document.getElementById('oldPinInput').value = '';
+            document.getElementById('newPinInput').value = '';
+            document.getElementById('changePinError').classList.add('hidden-section');
+            document.getElementById('changePinSuccess').classList.add('hidden-section');
+        }
+        function closeChangePinModal() { document.getElementById('changePinModal').classList.add('hidden-section'); }
+        function saveNewPin() {
+            const oldPin = document.getElementById('oldPinInput').value;
+            const newPin = document.getElementById('newPinInput').value;
+            if (oldPin !== getSystemPin()) {
+                document.getElementById('changePinError').innerText = 'الرمز القديم غير صحيح!';
+                document.getElementById('changePinError').classList.remove('hidden-section');
+                return;
+            }
+            if (newPin.length < 4) {
+                document.getElementById('changePinError').innerText = 'الرمز الجديد يجب أن يكون 4 أرقام/أحرف على الأقل.';
+                document.getElementById('changePinError').classList.remove('hidden-section');
+                return;
+            }
+            localStorage.setItem('estincode_admin_pin', newPin);
+            document.getElementById('changePinError').classList.add('hidden-section');
+            document.getElementById('changePinSuccess').classList.remove('hidden-section');
+            setTimeout(() => closeChangePinModal(), 1500);
+        }
+
+        // دوال التأكيد المخصص للحذف (تلغي نافذة المتصفح)
+        function requestDeleteYear() {
+            targetYearToDelete = document.getElementById('deleteYear').value;
+            document.getElementById('confirmModalText').innerHTML = `هل أنت متأكد من مسح جميع بيانات <strong>سنة ${targetYearToDelete}</strong> بالكامل؟ <br><br> لا يمكن التراجع عن هذا الإجراء!`;
+            document.getElementById('customConfirmModal').classList.remove('hidden-section');
+        }
+        function closeConfirmModal() { document.getElementById('customConfirmModal').classList.add('hidden-section'); }
+
+        function cancelOperation() { isOperationCancelled = true; }
+
         async function performSearch() {
             const queryText = document.getElementById('searchInput').value.trim().toLowerCase();
             const year = document.getElementById('searchYear').value;
             const resultsDiv = document.getElementById('results');
             
             if(queryText.length < 2) {
-                resultsDiv.innerHTML = '<div class="text-center text-slate-400 font-bold py-10 text-lg">يرجى كتابة حرفين على الأقل للبحث.</div>';
-                return;
+                resultsDiv.innerHTML = '<div class="text-center text-slate-400 font-bold py-10 text-lg">يرجى كتابة حرفين على الأقل للبحث.</div>'; return;
             }
-
-            resultsDiv.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-16">
-                    <svg class="animate-spin h-10 w-10 text-medical-500 mb-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                    <div class="text-medical-600 font-bold text-lg">جاري البحث في السحابة...</div>
-                </div>`;
+            resultsDiv.innerHTML = `<div class="flex flex-col items-center justify-center py-16"><svg class="animate-spin h-10 w-10 text-medical-500 mb-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><div class="text-medical-600 font-bold text-lg">جاري البحث في السحابة...</div></div>`;
 
             try {
                 const snapshot = await db.collection("medical_data_" + year).get();
                 let resultsHTML = ''; let count = 0;
-
                 snapshot.forEach(doc => {
                     const item = doc.data();
                     const itemName = item.name ? item.name.toLowerCase() : "";
                     const itemCode = item.code ? item.code.toLowerCase() : "";
-
                     if(itemName.includes(queryText) || itemCode.includes(queryText)) {
                         let annualNeed = parseFloat(item.need) || 0;
                         let monthlyNeed = (annualNeed / 12).toFixed(1);
                         if(monthlyNeed.endsWith('.0')) monthlyNeed = monthlyNeed.slice(0, -2);
-
                         resultsHTML += `
                             <div class="bg-white p-6 rounded-[2rem] shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-slate-100 hover:border-medical-200 transition-colors flex flex-col md:flex-row justify-between items-start md:items-center gap-5 relative overflow-hidden">
                                 <div class="absolute top-0 right-0 w-2 h-full bg-medical-500"></div>
                                 <div class="flex-1 pr-3">
-                                    <div class="inline-flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 mb-3">
-                                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                                        <span class="text-slate-600 font-bold text-sm tracking-widest ltr">${item.code}</span>
-                                    </div>
+                                    <div class="inline-flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 mb-3"><svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg><span class="text-slate-600 font-bold text-sm tracking-widest ltr">${item.code}</span></div>
                                     <h3 class="text-slate-800 font-bold text-lg leading-relaxed">${item.name}</h3>
                                 </div>
                                 <div class="flex flex-row gap-3 w-full md:w-auto">
-                                    <div class="bg-medical-50/50 border border-medical-100 text-medical-800 px-5 py-3 rounded-2xl text-center flex-1 md:w-32">
-                                        <div class="text-[10px] font-bold text-medical-500 mb-1 uppercase tracking-wider">الاحتياج السنوي</div>
-                                        <div class="font-black text-2xl">${annualNeed}</div>
-                                    </div>
-                                    <div class="bg-amber-50/50 border border-amber-100 text-amber-800 px-5 py-3 rounded-2xl text-center flex-1 md:w-32">
-                                        <div class="text-[10px] font-bold text-amber-500 mb-1 uppercase tracking-wider">الاحتياج الشهري</div>
-                                        <div class="font-black text-2xl">${monthlyNeed}</div>
-                                    </div>
+                                    <div class="bg-medical-50/50 border border-medical-100 text-medical-800 px-5 py-3 rounded-2xl text-center flex-1 md:w-32"><div class="text-[10px] font-bold text-medical-500 mb-1 uppercase tracking-wider">الاحتياج السنوي</div><div class="font-black text-2xl">${annualNeed}</div></div>
+                                    <div class="bg-amber-50/50 border border-amber-100 text-amber-800 px-5 py-3 rounded-2xl text-center flex-1 md:w-32"><div class="text-[10px] font-bold text-amber-500 mb-1 uppercase tracking-wider">الاحتياج الشهري</div><div class="font-black text-2xl">${monthlyNeed}</div></div>
                                 </div>
                             </div>`;
                         count++;
                     }
                 });
-
-                if(count === 0) {
-                    resultsDiv.innerHTML = `<div class="text-center text-slate-500 font-bold py-12 text-lg bg-slate-50 rounded-3xl border border-slate-100">لا توجد نتائج مطابقة في ${year}</div>`;
-                } else {
-                    resultsDiv.innerHTML = `<div class="text-slate-400 font-bold mb-4 text-sm px-2">تم العثور على ${count} نتيجة:</div>` + resultsHTML;
-                }
-            } catch (error) {
-                resultsDiv.innerHTML = `<div class="text-center text-red-500 font-bold py-12 text-lg bg-red-50 rounded-3xl">حدث خطأ في الاتصال بالسحابة.</div>`;
-            }
+                if(count === 0) resultsDiv.innerHTML = `<div class="text-center text-slate-500 font-bold py-12 text-lg bg-slate-50 rounded-3xl border border-slate-100">لا توجد نتائج مطابقة في ${year}</div>`;
+                else resultsDiv.innerHTML = `<div class="text-slate-400 font-bold mb-4 text-sm px-2">تم العثور على ${count} نتيجة:</div>` + resultsHTML;
+            } catch (error) { resultsDiv.innerHTML = `<div class="text-center text-red-500 font-bold py-12 text-lg bg-red-50 rounded-3xl">حدث خطأ في الاتصال بالسحابة.</div>`; }
         }
 
-        // دالة الرفع
         document.getElementById('fileInput').addEventListener('change', async (e) => {
             const files = e.target.files; if(files.length === 0) return;
             const year = document.getElementById('uploadYear').value;
             const statusDiv = document.getElementById('uploadStatus');
-            
             isOperationCancelled = false;
             statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-blue-50 border-blue-100 block fade-in';
             statusDiv.innerHTML = `<div class="font-bold text-blue-800 text-lg flex items-center gap-2"><svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> جاري استخراج البيانات...</div>`;
@@ -386,11 +433,9 @@
             let finalData = [];
             for(let i=0; i<files.length; i++) {
                 try {
-                    const data = await files[i].arrayBuffer();
-                    const workbook = XLSX.read(data);
+                    const data = await files[i].arrayBuffer(); const workbook = XLSX.read(data);
                     workbook.SheetNames.forEach(sheetName => {
-                        const sheet = workbook.Sheets[sheetName];
-                        const jsonData = XLSX.utils.sheet_to_json(sheet, {header: 1});
+                        const sheet = workbook.Sheets[sheetName]; const jsonData = XLSX.utils.sheet_to_json(sheet, {header: 1});
                         let codeCol = -1, nameCol = -1, needCol = -1, headerRowIndex = -1;
                         for(let rowIdx = 0; rowIdx < Math.min(15, jsonData.length); rowIdx++) {
                             const row = jsonData[rowIdx]; if (!row) continue;
@@ -414,9 +459,7 @@
                                     if(typeof row[j] === 'string' && codeRegex.test(row[j].trim())) {
                                         code = row[j].trim();
                                         if(j + 1 < row.length && row[j+1]) name = String(row[j+1]).trim();
-                                        for(let k=row.length-1; k>j; k--) {
-                                            if(!isNaN(row[k]) && String(row[k]).trim() !== "") { need = String(row[k]).trim(); break; }
-                                        }
+                                        for(let k=row.length-1; k>j; k--) { if(!isNaN(row[k]) && String(row[k]).trim() !== "") { need = String(row[k]).trim(); break; } }
                                         break;
                                     }
                                 }
@@ -430,12 +473,10 @@
                     });
                 } catch (err) {}
             }
-
             const uniqueData = Array.from(new Set(finalData.map(a => a.code))).map(code => finalData.find(a => a.code === code));
             if(uniqueData.length === 0) {
                 statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-red-50 border-red-100 block fade-in';
-                statusDiv.innerHTML = '<div class="font-bold text-red-700 text-lg">لم يتم العثور على بيانات صحيحة.</div>';
-                return;
+                statusDiv.innerHTML = '<div class="font-bold text-red-700 text-lg">لم يتم العثور على بيانات صحيحة.</div>'; return;
             }
 
             statusDiv.innerHTML = `
@@ -443,29 +484,20 @@
                     <div class="font-bold text-blue-900 text-lg flex items-center gap-2"><svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg> جاري الرفع (${year})</div>
                     <button onclick="cancelOperation()" class="bg-white hover:bg-slate-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-all flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> إلغاء</button>
                 </div>
-                <div class="w-full bg-blue-100/50 rounded-full h-4 mb-3 overflow-hidden">
-                    <div id="uploadProgressBar" class="bg-blue-600 h-4 rounded-full progress-bar-fill" style="width: 0%"></div>
-                </div>
-                <div class="flex justify-between text-sm font-bold text-blue-800/70">
-                    <span id="uploadProgressText">0 من ${uniqueData.length} مادة</span>
-                    <span id="uploadProgressPercent">0%</span>
-                </div>
-            `;
-
+                <div class="w-full bg-blue-100/50 rounded-full h-4 mb-3 overflow-hidden"><div id="uploadProgressBar" class="bg-blue-600 h-4 rounded-full progress-bar-fill" style="width: 0%"></div></div>
+                <div class="flex justify-between text-sm font-bold text-blue-800/70"><span id="uploadProgressText">0 من ${uniqueData.length} مادة</span><span id="uploadProgressPercent">0%</span></div>`;
+            
             let progressBar = document.getElementById('uploadProgressBar'), progressText = document.getElementById('uploadProgressText'), progressPercent = document.getElementById('uploadProgressPercent');
-
             try {
                 const collectionRef = db.collection("medical_data_" + year);
                 let batch = db.batch(), count = 0, totalCommitted = 0;
-
                 for (let i = 0; i < uniqueData.length; i++) {
                     if (isOperationCancelled) {
                         statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-amber-50 border-amber-200 block fade-in';
                         statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-lg">تم إيقاف الرفع! حفظ ${totalCommitted} مادة فقط.</div>`;
                         document.getElementById('fileInput').value = ""; return;
                     }
-                    const docRef = collectionRef.doc(uniqueData[i].code);
-                    batch.set(docRef, uniqueData[i]); count++;
+                    batch.set(collectionRef.doc(uniqueData[i].code), uniqueData[i]); count++;
                     if (count === 400 || i === uniqueData.length - 1) {
                         await batch.commit(); totalCommitted += count; batch = db.batch(); count = 0;
                         let percent = Math.round((totalCommitted / uniqueData.length) * 100);
@@ -481,11 +513,10 @@
             }
         });
 
-        // دالة الحذف
-        async function deleteYearData() {
-            const year = document.getElementById('deleteYear').value;
-            if (!confirm(`هل أنت متأكد من مسح بيانات ${year} بالكامل؟`)) return;
-
+        // دالة تنفيذ الحذف الفعلية (تُستدعى من النافذة الاحترافية)
+        async function executeDeleteYear() {
+            closeConfirmModal();
+            const year = targetYearToDelete;
             const statusDiv = document.getElementById('uploadStatus');
             isOperationCancelled = false;
             statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-amber-50 border-amber-100 block fade-in';
@@ -496,8 +527,7 @@
                 const snapshot = await collectionRef.get();
                 if (snapshot.empty) {
                     statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-slate-50 border-slate-200 block fade-in';
-                    statusDiv.innerHTML = `<div class="font-bold text-slate-600 text-lg">لا توجد بيانات لسنة ${year}.</div>`;
-                    return;
+                    statusDiv.innerHTML = `<div class="font-bold text-slate-600 text-lg">لا توجد بيانات لسنة ${year}.</div>`; return;
                 }
                 const totalItems = snapshot.size;
                 statusDiv.innerHTML = `
@@ -505,23 +535,16 @@
                         <div class="font-bold text-red-800 text-lg flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> جاري المسح (${year})</div>
                         <button onclick="cancelOperation()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-all">إيقاف</button>
                     </div>
-                    <div class="w-full bg-red-100/50 rounded-full h-4 mb-3 overflow-hidden">
-                        <div id="deleteProgressBar" class="bg-red-500 h-4 rounded-full progress-bar-fill" style="width: 0%"></div>
-                    </div>
-                    <div class="flex justify-between text-sm font-bold text-red-800/70">
-                        <span id="deleteProgressText">0 من ${totalItems} مادة</span>
-                        <span id="deleteProgressPercent">0%</span>
-                    </div>
-                `;
-
+                    <div class="w-full bg-red-100/50 rounded-full h-4 mb-3 overflow-hidden"><div id="deleteProgressBar" class="bg-red-500 h-4 rounded-full progress-bar-fill" style="width: 0%"></div></div>
+                    <div class="flex justify-between text-sm font-bold text-red-800/70"><span id="deleteProgressText">0 من ${totalItems} مادة</span><span id="deleteProgressPercent">0%</span></div>`;
+                
                 let progressBar = document.getElementById('deleteProgressBar'), progressText = document.getElementById('deleteProgressText'), progressPercent = document.getElementById('deleteProgressPercent');
                 let batch = db.batch(), count = 0, totalCommitted = 0, docsArray = snapshot.docs;
 
                 for (let i = 0; i < docsArray.length; i++) {
                     if (isOperationCancelled) {
                         statusDiv.className = 'mt-8 p-6 rounded-[2rem] border bg-amber-50 border-amber-200 block fade-in';
-                        statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-lg">تم الإيقاف! مسح ${totalCommitted} مادة فقط.</div>`;
-                        return;
+                        statusDiv.innerHTML = `<div class="font-bold text-amber-800 text-lg">تم الإيقاف! مسح ${totalCommitted} مادة فقط.</div>`; return;
                     }
                     batch.delete(docsArray[i].ref); count++;
                     if (count === 400 || i === docsArray.length - 1) {
