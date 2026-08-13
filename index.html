@@ -69,9 +69,17 @@
                         <p class="text-[10px] sm:text-xs font-semibold text-medical-600">تقدير الاحتياج الدوائي</p>
                     </div>
                 </div>
-                <button onclick="showAboutModal()" class="p-2 bg-slate-100 hover:bg-medical-50 text-slate-500 hover:text-medical-600 rounded-full transition-colors">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </button>
+                <!-- مجموعة الأزرار الجانبية -->
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                    <!-- زر دليل التثبيت -->
+                    <button onclick="showInstallGuideManual()" title="دليل التثبيت" class="p-2 bg-slate-100 hover:bg-blue-50 text-slate-500 hover:text-blue-600 rounded-full transition-colors">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    </button>
+                    <!-- زر حول النظام -->
+                    <button onclick="showAboutModal()" title="حول النظام" class="p-2 bg-slate-100 hover:bg-medical-50 text-slate-500 hover:text-medical-600 rounded-full transition-colors">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
@@ -187,7 +195,6 @@
                         <p class="text-[11px] sm:text-xs font-semibold text-slate-500 mt-0.5">مراقبة الرسائل والدعم الفني للمستشفيات</p>
                     </div>
                 </div>
-                <!-- تمت إضافة زر تغيير الرمز السري للإدارة هنا -->
                 <button onclick="showChangePinModal()" class="w-full sm:w-auto flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-600 hover:text-medical-600 hover:border-medical-200 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-all flex-shrink-0 mt-1 sm:mt-0">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
                     تغيير الرمز السري
@@ -421,12 +428,15 @@
 
         function generateYears() {
             const selects = ['searchYear', 'uploadYear', 'deleteYear'];
+            const defaultYear = 2026;
             selects.forEach(id => {
                 const selectElement = document.getElementById(id);
                 if(selectElement) {
                     selectElement.innerHTML = '';
-                    for (let year = 2026; year <= 2050; year++) {
-                        selectElement.appendChild(new Option('سنة ' + year, year));
+                    for (let year = 2000; year <= 2050; year++) {
+                        let opt = new Option('سنة ' + year, year);
+                        if(year === defaultYear) opt.selected = true;
+                        selectElement.appendChild(opt);
                     }
                 }
             });
@@ -446,7 +456,7 @@
             });
         }
 
-        // إظهار نافذة التثبيت الإرشادية الجديدة
+        // إظهار نافذة التثبيت الإرشادية الجديدة (تلقائياً لأول مرة)
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
         if (!isStandalone) {
             if (!localStorage.getItem('installGuideDismissed')) {
@@ -456,9 +466,15 @@
             }
         }
         
+        // إغلاق النافذة الإرشادية وحفظ الاختيار
         function dismissInstallGuide() {
             localStorage.setItem('installGuideDismissed', 'true');
             document.getElementById('installGuideModal').classList.add('hidden-section');
+        }
+
+        // إظهار النافذة الإرشادية يدوياً عبر الزر العلوي
+        function showInstallGuideManual() {
+            document.getElementById('installGuideModal').classList.remove('hidden-section');
         }
 
         // --- دوال النوافذ والشات ---
