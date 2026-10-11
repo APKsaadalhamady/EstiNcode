@@ -244,13 +244,7 @@
             <button onclick="closeAuthModal()" class="absolute top-5 sm:top-6 right-5 sm:right-6 text-slate-400 hover:text-slate-700 transition bg-slate-100 p-2 rounded-full"><svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             <div class="w-16 h-16 sm:w-20 sm:h-20 bg-medical-50 rounded-full flex items-center justify-center mx-auto mb-5 sm:mb-6"><svg class="w-8 h-8 sm:w-10 sm:h-10 text-medical-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div>
             <h3 class="text-xl sm:text-2xl font-bold text-slate-800 mb-2">تسجيل الدخول</h3>
-            <p class="text-slate-500 font-semibold mb-5 sm:mb-6 text-xs sm:text-sm">اختر مؤسستك وأدخل الرمز السري</p>
-            
-            <div class="relative w-full mb-3 sm:mb-4 text-right">
-                <select id="loginHospital" class="w-full p-3.5 sm:p-4 pl-10 border-2 border-slate-100 rounded-xl sm:rounded-2xl bg-slate-50 focus:border-medical-500 focus:bg-white outline-none text-sm sm:text-base font-bold text-slate-800 appearance-none transition-all"></select>
-                <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><svg class="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
-            </div>
-
+            <p class="text-slate-500 font-semibold mb-5 sm:mb-6 text-xs sm:text-sm">أدخل الرمز السري للوصول</p>
             <input type="password" id="pinInput" placeholder="الرمز السري..." class="w-full p-3.5 sm:p-4 border-2 border-slate-100 rounded-xl sm:rounded-2xl text-center text-xl sm:text-2xl tracking-[0.5em] focus:border-medical-500 focus:bg-medical-50 outline-none mb-4 font-bold text-slate-800 transition-colors" onkeypress="if(event.key === 'Enter') verifyPin()">
             <p id="pinError" class="text-red-500 font-bold mb-4 hidden-section text-xs sm:text-sm bg-red-50 p-2 rounded-lg">الرمز السري غير صحيح!</p>
             
@@ -291,17 +285,13 @@
                 <button onclick="closeSupportChatModal()" class="hover:bg-white/20 p-2 rounded-full transition"><svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
             
-            <div id="chatSetupScreen" class="flex-1 p-6 flex flex-col justify-center items-center text-center bg-slate-50">
-                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center mb-5 text-blue-500"><svg class="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg></div>
-                <h3 class="font-bold text-slate-800 text-lg sm:text-xl mb-2">أهلاً بك في الدعم الفني</h3>
-                <p class="text-slate-500 font-semibold mb-6 text-xs sm:text-sm">اختر مستشفاك للبدء بالمحادثة مع الإدارة.</p>
-                <select id="chatHospitalSelect" class="w-full p-3.5 sm:p-4 border-2 border-slate-200 rounded-xl sm:rounded-2xl bg-white mb-4 font-bold text-slate-700 outline-none focus:border-blue-500 text-sm sm:text-base"></select>
-                <button onclick="startChatSession()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 sm:py-4 rounded-xl sm:rounded-2xl transition-all shadow-lg shadow-blue-600/30 text-base sm:text-lg">بدء المحادثة</button>
+            <div id="chatSetupScreen" class="hidden-section flex-1 p-6 flex flex-col justify-center items-center text-center bg-slate-50">
+                <!-- تم إخفائها للدخول المباشر -->
             </div>
 
             <div id="chatMessagesScreen" class="hidden-section flex-1 flex flex-col bg-slate-50">
                 <div id="chatMessagesList" class="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col text-sm sm:text-base"></div>
-                <div class="p-3 bg-white border-t border-slate-200 flex gap-2 items-center">
+                <div class="p-3 bg-white border-t} border-slate-200 flex gap-2 items-center">
                     <input type="text" id="chatInput" placeholder="اكتب استفسارك هنا..." class="flex-1 p-3 border-2 border-slate-100 rounded-xl outline-none focus:border-blue-500 text-xs sm:text-sm font-semibold transition-colors" onkeypress="if(event.key === 'Enter') sendChatMessage()">
                     <button onclick="sendChatMessage()" class="bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 transition-colors shadow-md flex items-center justify-center"><svg class="w-4 h-4 sm:w-5 sm:h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg></button>
                 </div>
@@ -431,19 +421,9 @@
         document.getElementById('feedbackForm').action = `https://formsubmit.co/${em1}@${em2}`;
 
         // المستشفيات
+        // المستشفيات (مستشفى الموانئ وإدارة التطبيق فقط)
         const HOSPITALS = [
             { id: "mawani", name: "مستشفى الموانئ التعليمي", defaultPin: "1111" },
-            { id: "basra_teach", name: "مستشفى البصرة التعليمي", defaultPin: "2222" },
-            { id: "fayhaa", name: "مستشفى الفيحاء التعليمي", defaultPin: "3333" },
-            { id: "shifaa", name: "مستشفى الشفاء", defaultPin: "4444" },
-            { id: "sadr", name: "مستشفى الصدر التعليمي", defaultPin: "5555" },
-            { id: "maternity", name: "مستشفى البصرة للولادة والاطفال", defaultPin: "6666" },
-            { id: "child_spec", name: "مستشفى البصرة التخصصي للاطفال", defaultPin: "7777" },
-            { id: "zubair", name: "مستشفى الزبير العام", defaultPin: "8888" },
-            { id: "umqasr", name: "مستشفى ام قصر العام", defaultPin: "9999" },
-            { id: "qurna", name: "مستشفى القرنة العام", defaultPin: "1010" },
-            { id: "faw", name: "مستشفى الفاو العام", defaultPin: "2020" },
-            { id: "sayyab", name: "مستشفى السياب التعليمي", defaultPin: "3030" },
             { id: "super_admin", name: "إدارة التطبيق", defaultPin: "2026" }
         ];
 
@@ -453,17 +433,6 @@
         let activeChatHospitalId = null;
         let chatUnsubscribe = null;
         let superAdminChatsUnsubscribe = null;
-
-        function populateHospitals() {
-            const normalHospitals = HOSPITALS.filter(h => h.id !== 'super_admin');
-            const searchSelect = document.getElementById('searchHospital');
-            const chatSelect = document.getElementById('chatHospitalSelect');
-            const loginSelect = document.getElementById('loginHospital');
-
-            if(searchSelect) { searchSelect.innerHTML = ''; normalHospitals.forEach(hosp => searchSelect.appendChild(new Option(hosp.name, hosp.id))); }
-            if(chatSelect) { chatSelect.innerHTML = ''; normalHospitals.forEach(hosp => chatSelect.appendChild(new Option(hosp.name, hosp.id))); }
-            if(loginSelect) { loginSelect.innerHTML = ''; HOSPITALS.forEach(hosp => loginSelect.appendChild(new Option(hosp.name, hosp.id))); }
-        }
 
         function generateYears() {
             const selects = ['searchYear', 'uploadYear', 'deleteYear'];
@@ -481,8 +450,7 @@
             });
         }
         
-        populateHospitals(); generateYears();
-
+        generateYears(); // تم مسح دالة populateHospitals لأنها لم تعد ضرورية
         function getHospitalPin(hospitalId) {
             const hosp = HOSPITALS.find(h => h.id === hospitalId);
             return localStorage.getItem('estincode_pin_' + hospitalId) || hosp.defaultPin;
@@ -524,12 +492,9 @@
 
         function showSupportChatModal() { 
             document.getElementById('supportChatModal').classList.remove('hidden-section'); 
-            if (loggedInHospital && loggedInHospital.id !== 'super_admin') {
-                document.getElementById('chatHospitalSelect').value = loggedInHospital.id;
-                startChatSession();
-            } else {
-                document.getElementById('chatSetupScreen').classList.remove('hidden-section');
-                document.getElementById('chatMessagesScreen').classList.add('hidden-section');
+            // فتح المحادثة مباشرة لمستشفى الموانئ بدون شاشة اختيار
+            if (!loggedInHospital || loggedInHospital.id !== 'super_admin') {
+                startChatSession('mawani');
             }
         }
         
@@ -539,7 +504,7 @@
         }
 
         function startChatSession(overrideHospId = null) {
-            activeChatHospitalId = overrideHospId || document.getElementById('chatHospitalSelect').value;
+            activeChatHospitalId = overrideHospId || 'mawani';
             const hospObj = HOSPITALS.find(h => h.id === activeChatHospitalId);
             
             document.getElementById('chatSetupScreen').classList.add('hidden-section');
@@ -660,10 +625,17 @@
         function closeAuthModal() { document.getElementById('authModal').classList.add('hidden-section'); }
 
         function verifyPin() {
-            const selectedHospId = document.getElementById('loginHospital').value;
             const inputPin = document.getElementById('pinInput').value;
+            let selectedHospId = null;
+
+            // تحديد ما إذا كان الرمز يخص الإدارة أو مستشفى الموانئ
+            if (inputPin === getHospitalPin('super_admin')) {
+                selectedHospId = 'super_admin';
+            } else if (inputPin === getHospitalPin('mawani')) {
+                selectedHospId = 'mawani';
+            }
             
-            if (inputPin === getHospitalPin(selectedHospId)) {
+            if (selectedHospId) {
                 loggedInHospital = HOSPITALS.find(h => h.id === selectedHospId);
                 if (loggedInHospital.id !== 'super_admin') {
                     document.getElementById('adminTitle').innerText = loggedInHospital.name;
@@ -675,7 +647,6 @@
                 document.getElementById('pinInput').value = '';
             }
         }
-
         function showChangePinModal() {
             document.getElementById('changePinModal').classList.remove('hidden-section');
             document.getElementById('oldPinInput').value = ''; document.getElementById('newPinInput').value = '';
@@ -694,7 +665,7 @@
         async function performSearch() {
             const queryText = document.getElementById('searchInput').value.trim().toLowerCase();
             const year = document.getElementById('searchYear').value;
-            const hospitalId = document.getElementById('searchHospital').value;
+            const hospitalId = "mawani";
             const resultsDiv = document.getElementById('results');
             if(queryText.length < 2) { resultsDiv.innerHTML = '<div class="text-center text-slate-400 font-bold py-8 text-sm sm:text-lg">يرجى كتابة حرفين على الأقل للبحث.</div>'; return; }
             resultsDiv.innerHTML = `<div class="flex flex-col items-center justify-center py-10 sm:py-16"><svg class="animate-spin h-8 w-8 sm:h-10 sm:w-10 text-medical-500 mb-3 sm:mb-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><div class="text-medical-600 font-bold text-sm sm:text-lg">جاري البحث في السحابة...</div></div>`;
