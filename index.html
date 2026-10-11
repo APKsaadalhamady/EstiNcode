@@ -388,6 +388,16 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // تفعيل التخزين المؤقت (Offline Persistence) لعمل التطبيق بدون إنترنت وتسريع البحث
+        db.enablePersistence()
+            .catch(function(err) {
+                if (err.code == 'failed-precondition') {
+                    console.warn("توجد عدة علامات تبويب مفتوحة، التخزين المؤقت يعمل في واحدة فقط.");
+                } else if (err.code == 'unimplemented') {
+                    console.warn("المتصفح الحالي لا يدعم ميزة التخزين المؤقت.");
+                }
+            });
+
         const em1 = "apk.saadalhamady"; const em2 = "gmail.com";
         document.getElementById('feedbackForm').action = `https://formsubmit.co/${em1}@${em2}`;
 
