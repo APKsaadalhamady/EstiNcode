@@ -104,12 +104,8 @@
         <!-- قسم البحث -->
         <section id="search-section" class="fade-in">
             <div class="bg-white p-5 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 mb-8">
-                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 sm:gap-4 mb-3 sm:mb-4">
-                    <div class="relative sm:col-span-2">
-                        <select id="searchHospital" class="w-full p-3.5 sm:p-4 pl-10 border-2 border-slate-100 rounded-xl sm:rounded-2xl bg-slate-50 focus:border-medical-500 focus:bg-white outline-none text-sm sm:text-base font-bold text-slate-700 appearance-none transition-all"></select>
-                        <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><svg class="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
-                    </div>
-                    <div class="relative sm:col-span-2">
+                <div class="grid grid-cols-1 mb-3 sm:mb-4">
+                    <div class="relative w-full">
                         <select id="searchYear" class="w-full p-3.5 sm:p-4 pl-10 border-2 border-slate-100 rounded-xl sm:rounded-2xl bg-slate-50 focus:border-medical-500 focus:bg-white outline-none text-sm sm:text-base font-bold text-slate-700 appearance-none transition-all"></select>
                         <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><svg class="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                     </div>
@@ -125,7 +121,7 @@
             <div id="results" class="space-y-4">
                 <div class="text-center flex flex-col items-center justify-center py-10 sm:py-16 opacity-60">
                     <svg class="w-16 h-16 sm:w-20 sm:h-20 text-slate-300 mb-3 sm:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    <p class="text-slate-500 font-semibold text-sm sm:text-base">اختر المستشفى والسنة، ثم أدخل كلمة البحث</p>
+                    <p class="text-slate-500 font-semibold text-sm sm:text-base">اختر السنة، ثم أدخل كلمة البحث</p>
                 </div>
             </div>
         </section>
@@ -388,11 +384,10 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // تفعيل التخزين المؤقت (Offline Persistence) لعمل التطبيق بدون إنترنت
+        // تفعيل التخزين المؤقت (Offline Persistence)
         db.enablePersistence()
             .then(() => {
-                // استدعاء دالة التحميل المسبق بمجرد تفعيل التخزين المؤقت
-                preloadEntireDatabase();
+                preloadAllAvailableYears();
             })
             .catch(function(err) {
                 if (err.code == 'failed-precondition') {
@@ -402,25 +397,36 @@
                 }
             });
 
-        // دالة تقوم بتحميل جميع بيانات المستشفيات في الخلفية لحفظها في الجهاز
-        async function preloadEntireDatabase() {
-            // نحدد السنة الحالية لتجنب استهلاك باقة فايربيس في تحميل سنوات فارغة
-            const targetYear = 2026; 
+        // دالة تستعلم عن جميع السنوات المسجلة وتقوم بتحميل كل بياناتها أوفلاين
+        async function preloadAllAvailableYears() {
             const normalHospitals = HOSPITALS.filter(h => h.id !== 'super_admin');
-            
-            console.log("جاري تحميل قاعدة البيانات للعمل بدون إنترنت...");
-            
-            for (const hosp of normalHospitals) {
-                try {
-                    // جلب البيانات لكي يقوم فايربيس بحفظها في الذاكرة المؤقتة تلقائياً
-                    await db.collection(`medical_data_${hosp.id}_${targetYear}`).get();
-                } catch (error) {
-                    console.error("خطأ في تحميل بيانات: " + hosp.name, error);
+            let yearsToLoad = ['2026']; // سنة افتراضية احتياطية
+
+            try {
+                // قراءة سجل السنوات المرفوعة فعلياً في السحابة
+                const metaDoc = await db.collection('app_metadata').doc('active_years').get();
+                if (metaDoc.exists && Array.isArray(metaDoc.data().years)) {
+                    yearsToLoad = metaDoc.data().years;
+                }
+            } catch (err) {
+                console.warn("تعذر جلب سجل السنوات، سيتم التحميل التلقائي للسنة الافتراضية:", err);
+            }
+
+            console.log("السنوات التي سيتم تحميلها للعمل بدون إنترنت:", yearsToLoad);
+
+            for (const year of yearsToLoad) {
+                for (const hosp of normalHospitals) {
+                    try {
+                        // طلب البيانات ليتم تخزينها في المتصفح أوفلاين
+                        await db.collection(`medical_data_${hosp.id}_${year}`).get();
+                    } catch (error) {
+                        console.error(`خطأ في تحميل بيانات: ${hosp.name} (${year})`, error);
+                    }
                 }
             }
-            console.log("اكتمل تحميل البيانات! التطبيق جاهز للعمل أوفلاين بالكامل.");
-        }
 
+            console.log("تم تحميل بيانات جميع المستشفيات والسنوات! التطبيق متاح بالكامل أوفلاين.");
+        }
         const em1 = "apk.saadalhamady"; const em2 = "gmail.com";
         document.getElementById('feedbackForm').action = `https://formsubmit.co/${em1}@${em2}`;
 
@@ -773,6 +779,11 @@
                         let percent = Math.round((totalCommitted / uniqueData.length) * 100); progressBar.style.width = percent + '%'; progressText.innerText = `${totalCommitted} من ${uniqueData.length} مادة`; progressPercent.innerText = percent + '%';
                     }
                 }
+                // حفظ السنة في سجل السنوات المرفوعة حتى يتم تحميلها في أجهزة المستخدمين
+                await db.collection('app_metadata').doc('active_years').set({
+                    years: firebase.firestore.FieldValue.arrayUnion(year)
+                }, { merge: true });
+
                 statusDiv.className = 'mt-6 sm:mt-8 p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border bg-medical-50 border-medical-100 block fade-in'; statusDiv.innerHTML = `<div class="font-bold text-medical-800 text-sm sm:text-lg flex items-center gap-1.5 sm:gap-2"><svg class="w-5 h-5 sm:w-6 sm:h-6 text-medical-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> اكتمل بنجاح! تم حفظ ${uniqueData.length} مادة.</div>`; document.getElementById('fileInput').value = "";
             } catch (error) { statusDiv.className = 'mt-6 sm:mt-8 p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border bg-red-50 border-red-100 block fade-in'; statusDiv.innerHTML = `<div class="font-bold text-red-700 text-sm sm:text-lg ltr text-left">Error: ${error.message}</div>`; }
         });
